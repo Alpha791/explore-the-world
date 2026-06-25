@@ -1,1195 +1,1456 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frigates · Explore the world</title>
-  <style>
-    /* ── Reset & base ── */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frigates · Explore the world</title>
+    <style>
+        /* ── Reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
-      background: #0a0e1a;
-      color: #f0f4ff;
-      height: 100vh;
-      overflow: hidden; /* will be changed when results appear */
-      display: flex;
-      flex-direction: column;
-    }
-    body.show-results {
-      overflow-y: auto;
-    }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #f0f4ff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        body.show-results {
+            overflow-y: auto;
+        }
 
-    /* ── Canvas background ── */
-    #battleCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      display: block;
-    }
+        /* ── Canvas background ── */
+        #battleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: block;
+        }
 
-    /* ── Main content ── */
-    .app {
-      position: relative;
-      z-index: 2;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start; /* allow scrolling */
-      padding: 2rem 1.5rem;
-      pointer-events: none;
-      min-height: 100vh;
-    }
-    .app * {
-      pointer-events: auto;
-    }
+        /* ── Main content ── */
+        .app {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem 1.5rem;
+            pointer-events: none;
+            min-height: 100vh;
+        }
+        .app * {
+            pointer-events: auto;
+        }
 
-    /* ── Header ── */
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2.5rem;
-      z-index: 10;
-      background: rgba(10, 14, 26, 0.6);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      width: 100%;
-    }
+        /* ── Header ── */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2.5rem;
+            z-index: 10;
+            background: rgba(10, 14, 26, 0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            width: 100%;
+        }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #f472b6, #60a5fa, #34d399);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 40px rgba(96, 165, 250, 0.2);
-    }
-    .logo .ship-icon {
-      -webkit-text-fill-color: initial;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1.6rem;
-      background: none;
-    }
-    .logo span {
-      font-weight: 300;
-      -webkit-text-fill-color: rgba(255, 255, 255, 0.4);
-      background: none;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-    }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f472b6, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(96, 165, 250, 0.2);
+        }
+        .logo .ship-icon {
+            -webkit-text-fill-color: initial;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.6rem;
+            background: none;
+        }
+        .logo span {
+            font-weight: 300;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.4);
+            background: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-    .nav-links a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s, border-bottom 0.2s;
-      padding-bottom: 2px;
-      border-bottom: 1px solid transparent;
-    }
-    .nav-links a:hover {
-      color: #fff;
-      border-bottom-color: #60a5fa;
-    }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .nav-links a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s, border-bottom 0.2s;
+            padding-bottom: 2px;
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
+        }
+        .nav-links a:hover {
+            color: #fff;
+            border-bottom-color: #60a5fa;
+        }
 
-    .user-area {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-    }
-    .user-area .lang {
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .user-area .lang:hover {
-      color: #fff;
-    }
-    .user-area .avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f472b6, #60a5fa);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      color: #0a0e1a;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .user-area .avatar:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
-    }
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+        .user-area .lang {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .user-area .lang:hover {
+            color: #fff;
+        }
+        .user-area .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f472b6, #60a5fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #0a0e1a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .user-area .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+        }
 
-    /* ── Hero search ── */
-    .hero {
-      text-align: center;
-      max-width: 780px;
-      width: 100%;
-      margin-top: 4.5rem; /* push down below header */
-      margin-bottom: 2rem;
-    }
+        /* ── Hero search ── */
+        .hero {
+            text-align: center;
+            max-width: 780px;
+            width: 100%;
+            margin-top: 4.5rem;
+            margin-bottom: 2rem;
+        }
 
-    .hero h1 {
-      font-size: 3.8rem;
-      font-weight: 700;
-      letter-spacing: -1.5px;
-      background: linear-gradient(to right, #f9a8d4, #93c5fd, #6ee7b7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.2rem;
-      text-shadow: 0 0 60px rgba(96, 165, 250, 0.15);
-    }
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            background: linear-gradient(to right, #f9a8d4, #93c5fd, #6ee7b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 0 60px rgba(96, 165, 250, 0.15);
+        }
 
-    .hero .sub {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 2.2rem;
-      font-weight: 300;
-      letter-spacing: 1.2px;
-    }
+        .hero .sub {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 1.2px;
+        }
 
-    /* Search box – glass with category dropdown */
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 60px;
-      padding: 0.2rem 0.2rem 0.2rem 0.2rem;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.08);
-      transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
-      width: 100%;
-    }
-    .search-box:focus-within {
-      border-color: rgba(96, 165, 250, 0.5);
-      box-shadow: 0 8px 48px rgba(96, 165, 250, 0.15), 0 0 0 2px rgba(96, 165, 250, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-    }
+        /* Search box */
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 60px;
+            padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(96, 165, 250, 0.08);
+            transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
+            width: 100%;
+        }
+        .search-box:focus-within {
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 8px 48px rgba(96, 165, 250, 0.15), 0 0 0 2px rgba(96, 165, 250, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
 
-    .search-box .category-select {
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 0.5rem 0.8rem 0.5rem 1.2rem;
-      cursor: pointer;
-      outline: none;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      font-family: inherit;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.5)'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.8rem center;
-      background-size: 10px 6px;
-      padding-right: 2.2rem;
-      min-width: 90px;
-    }
-    .search-box .category-select option {
-      background: #1a1f2e;
-      color: #fff;
-    }
+        .search-box .category-select {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 0.8rem 0.5rem 1.2rem;
+            cursor: pointer;
+            outline: none;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            font-family: inherit;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.5)'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 10px 6px;
+            padding-right: 2.2rem;
+            min-width: 90px;
+        }
+        .search-box .category-select option {
+            background: #1a1f2e;
+            color: #fff;
+        }
 
-    .search-box .icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 1.2rem;
-      padding-left: 0.4rem;
-    }
-    .search-box .icon svg {
-      width: 22px;
-      height: 22px;
-      fill: currentColor;
-    }
+        .search-box .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            padding-left: 0.4rem;
+        }
+        .search-box .icon svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
 
-    .search-box input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 0.9rem 0.4rem 0.9rem 0.6rem;
-      font-size: 1.15rem;
-      font-weight: 400;
-      color: #f0f4ff;
-      outline: none;
-      font-family: inherit;
-      min-width: 0;
-    }
-    .search-box input::placeholder {
-      color: rgba(255, 255, 255, 0.25);
-      font-weight: 300;
-      letter-spacing: 0.2px;
-    }
+        .search-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.9rem 0.4rem 0.9rem 0.6rem;
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #f0f4ff;
+            outline: none;
+            font-family: inherit;
+            min-width: 0;
+        }
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+            font-weight: 300;
+            letter-spacing: 0.2px;
+        }
 
-    .search-box .actions {
-      display: flex;
-      align-items: center;
-      gap: 0.2rem;
-      flex-shrink: 0;
-      padding-right: 0.2rem;
-    }
+        .search-box .actions {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            flex-shrink: 0;
+            padding-right: 0.2rem;
+        }
 
-    .search-box .action-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: none;
-      background: transparent;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, transform 0.15s;
-    }
-    .search-box .action-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      transform: scale(1.05);
-    }
-    .search-box .action-btn:active {
-      transform: scale(0.92);
-    }
-    .search-box .action-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: currentColor;
-    }
+        .search-box .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+        }
+        .search-box .action-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .search-box .action-btn:active {
+            transform: scale(0.92);
+        }
+        .search-box .action-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
 
-    .search-box .go-btn {
-      background: linear-gradient(135deg, #f472b6, #60a5fa);
-      border: none;
-      border-radius: 40px;
-      padding: 0.7rem 1.8rem;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #0a0e1a;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      letter-spacing: 0.3px;
-      margin-left: 0.2rem;
-      white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(96, 165, 250, 0.25);
-    }
-    .search-box .go-btn:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 30px rgba(96, 165, 250, 0.4);
-    }
-    .search-box .go-btn:active {
-      transform: scale(0.96);
-    }
+        .search-box .go-btn {
+            background: linear-gradient(135deg, #f472b6, #60a5fa);
+            border: none;
+            border-radius: 40px;
+            padding: 0.7rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0a0e1a;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 0.3px;
+            margin-left: 0.2rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(96, 165, 250, 0.25);
+        }
+        .search-box .go-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 30px rgba(96, 165, 250, 0.4);
+        }
+        .search-box .go-btn:active {
+            transform: scale(0.96);
+        }
 
-    .lucky-btn {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 40px;
-      padding: 0.65rem 1.5rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.7);
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-left: 0.5rem;
-      font-family: inherit;
-      backdrop-filter: blur(4px);
-      white-space: nowrap;
-    }
-    .lucky-btn:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.3);
-      color: #fff;
-      transform: scale(1.02);
-    }
+        .lucky-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 40px;
+            padding: 0.65rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 0.5rem;
+            font-family: inherit;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+        .lucky-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            transform: scale(1.02);
+        }
 
-    /* ── Quick links ── */
-    .quick-links {
-      margin-top: 2.8rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1.8rem 2.5rem;
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.3);
-    }
-    .quick-links a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s, border-bottom 0.2s;
-      border-bottom: 1px solid transparent;
-      padding-bottom: 2px;
-    }
-    .quick-links a:hover {
-      color: rgba(255, 255, 255, 0.7);
-      border-bottom-color: rgba(96, 165, 250, 0.4);
-    }
+        /* ── Quick links ── */
+        .quick-links {
+            margin-top: 2.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.8rem 2.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .quick-links a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s, border-bottom 0.2s;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+            cursor: pointer;
+        }
+        .quick-links a:hover {
+            color: rgba(255, 255, 255, 0.7);
+            border-bottom-color: rgba(96, 165, 250, 0.4);
+        }
 
-    .footer-stats {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.15);
-      letter-spacing: 0.5px;
-      z-index: 2;
-    }
-    .footer-stats span {
-      margin: 0 1rem;
-    }
+        /* ── Info panels (for quick links) ── */
+        .info-panel {
+            display: none;
+            width: 100%;
+            max-width: 780px;
+            margin: 1rem auto 2rem;
+            background: rgba(10, 14, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: left;
+            color: #d0d8e8;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+        .info-panel.visible {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .info-panel h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f9a8d4, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .info-panel p {
+            margin-bottom: 1rem;
+        }
+        .info-panel .highlight {
+            color: #60a5fa;
+            font-weight: 500;
+        }
+        .info-panel .whatsapp-btn {
+            display: inline-block;
+            background: #25D366;
+            color: #fff;
+            padding: 0.6rem 1.8rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .info-panel .whatsapp-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+        }
+        .info-panel .whatsapp-btn svg {
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            fill: currentColor;
+        }
 
-    /* ── Google CSE Results ── */
-    #cse-results {
-      width: 100%;
-      max-width: 780px;
-      margin: 1rem auto 3rem;
-      background: rgba(10, 14, 26, 0.7);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      display: none; /* hidden until search */
-    }
-    #cse-results.gcse-results-visible {
-      display: block;
-    }
+        /* ── Google CSE Results ── */
+        #cse-results {
+            width: 100%;
+            max-width: 780px;
+            margin: 1rem auto 3rem;
+            background: rgba(10, 14, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: none;
+        }
+        #cse-results.gcse-results-visible {
+            display: block;
+        }
 
-    /* override Google's default dark text */
-    .gsc-control-cse {
-      background: transparent !important;
-      border: none !important;
-      font-family: inherit !important;
-    }
-    .gsc-control-cse .gsc-table-result,
-    .gsc-control-cse .gs-webResult .gs-title,
-    .gsc-control-cse .gs-webResult .gs-snippet,
-    .gsc-control-cse .gs-webResult .gs-visibleUrl {
-      color: #f0f4ff !important;
-    }
-    .gsc-control-cse .gsc-result-info {
-      color: rgba(255, 255, 255, 0.6) !important;
-    }
-    .gsc-control-cse .gsc-search-button {
-      background: linear-gradient(135deg, #f472b6, #60a5fa) !important;
-      border: none !important;
-      border-radius: 40px !important;
-      padding: 0.5rem 1.5rem !important;
-      color: #0a0e1a !important;
-      font-weight: 600 !important;
-    }
-    .gsc-control-cse input.gsc-search-input {
-      background: rgba(255, 255, 255, 0.05) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      border-radius: 30px !important;
-      color: #f0f4ff !important;
-      padding: 0.6rem 1rem !important;
-    }
-    .gsc-control-cse input.gsc-search-input:focus {
-      border-color: #60a5fa !important;
-      outline: none !important;
-    }
-    /* hide Google's own search box (we have our own) */
-    .gsc-search-box {
-      display: none !important;
-    }
+        .gsc-control-cse {
+            background: transparent !important;
+            border: none !important;
+            font-family: inherit !important;
+        }
+        .gsc-control-cse .gsc-table-result,
+        .gsc-control-cse .gs-webResult .gs-title,
+        .gsc-control-cse .gs-webResult .gs-snippet,
+        .gsc-control-cse .gs-webResult .gs-visibleUrl {
+            color: #f0f4ff !important;
+        }
+        .gsc-control-cse .gsc-result-info {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        .gsc-control-cse .gsc-search-button {
+            background: linear-gradient(135deg, #f472b6, #60a5fa) !important;
+            border: none !important;
+            border-radius: 40px !important;
+            padding: 0.5rem 1.5rem !important;
+            color: #0a0e1a !important;
+            font-weight: 600 !important;
+        }
+        .gsc-control-cse input.gsc-search-input {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 30px !important;
+            color: #f0f4ff !important;
+            padding: 0.6rem 1rem !important;
+        }
+        .gsc-control-cse input.gsc-search-input:focus {
+            border-color: #60a5fa !important;
+            outline: none !important;
+        }
+        .gsc-search-box {
+            display: none !important;
+        }
 
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .header {
-        padding: 0.8rem 1.5rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .nav-links {
-        gap: 1rem;
-        font-size: 0.85rem;
-      }
-      .hero h1 {
-        font-size: 2.6rem;
-      }
-      .hero .sub {
-        font-size: 1rem;
-        margin-bottom: 1.8rem;
-      }
-      .search-box {
-        flex-wrap: nowrap;
-        border-radius: 40px;
-        padding: 0.1rem 0.1rem 0.1rem 0;
-      }
-      .search-box .category-select {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.6rem 0.4rem 1rem;
-        min-width: 70px;
-        background-position: right 0.6rem center;
-      }
-      .search-box input {
-        font-size: 1rem;
-        padding: 0.7rem 0.2rem;
-      }
-      .search-box .go-btn {
-        padding: 0.5rem 1.2rem;
-        font-size: 0.9rem;
-      }
-      .search-box .action-btn {
-        width: 36px;
-        height: 36px;
-      }
-      .lucky-btn {
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
-      }
-      .quick-links {
-        gap: 1.2rem;
-        font-size: 0.8rem;
-      }
-    }
+        /* ── Footer stats ── */
+        .footer-stats {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+        .footer-stats span {
+            margin: 0 1rem;
+        }
 
-    @media (max-width: 480px) {
-      .header {
-        padding: 0.6rem 1rem;
-      }
-      .logo {
-        font-size: 1.4rem;
-      }
-      .logo .ship-icon {
-        font-size: 1.2rem;
-      }
-      .nav-links {
-        display: none;
-      }
-      .hero h1 {
-        font-size: 2rem;
-      }
-      .hero .sub {
-        font-size: 0.9rem;
-        margin-bottom: 1.4rem;
-      }
-      .search-box {
-        border-radius: 32px;
-        flex-wrap: wrap;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 0.3rem;
-      }
-      .search-box .category-select {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 0;
-        padding: 0.5rem 1rem;
-        background-position: right 1rem center;
-        text-align: left;
-      }
-      .search-box input {
-        font-size: 0.95rem;
-        padding: 0.6rem 0.4rem;
-        width: 100%;
-        flex: 1 1 100%;
-      }
-      .search-box .actions {
-        width: 100%;
-        justify-content: flex-end;
-        padding: 0.2rem 0.1rem 0.1rem;
-        gap: 0.1rem;
-      }
-      .search-box .go-btn {
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
-        flex: 1;
-      }
-      .lucky-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.75rem;
-        margin-left: 0.2rem;
-      }
-      .search-box .action-btn {
-        width: 32px;
-        height: 32px;
-      }
-      .search-box .action-btn svg {
-        width: 16px;
-        height: 16px;
-      }
-      .quick-links {
-        gap: 0.8rem 1.2rem;
-        font-size: 0.75rem;
-        margin-top: 1.8rem;
-      }
-      .footer-stats {
-        font-size: 0.6rem;
-        bottom: 0.8rem;
-      }
-      #cse-results {
-        padding: 1rem;
-        margin: 0.5rem auto 2rem;
-      }
-    }
-  </style>
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .header { padding: 0.8rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+            .nav-links { gap: 1rem; font-size: 0.85rem; }
+            .hero h1 { font-size: 2.6rem; }
+            .hero .sub { font-size: 1rem; margin-bottom: 1.8rem; }
+            .search-box { flex-wrap: nowrap; border-radius: 40px; padding: 0.1rem 0.1rem 0.1rem 0; }
+            .search-box .category-select { font-size: 0.8rem; padding: 0.4rem 0.6rem 0.4rem 1rem; min-width: 70px; background-position: right 0.6rem center; }
+            .search-box input { font-size: 1rem; padding: 0.7rem 0.2rem; }
+            .search-box .go-btn { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+            .search-box .action-btn { width: 36px; height: 36px; }
+            .lucky-btn { padding: 0.4rem 1rem; font-size: 0.8rem; }
+            .quick-links { gap: 1.2rem; font-size: 0.8rem; }
+            .info-panel { padding: 1.5rem; }
+            .info-panel h2 { font-size: 1.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .header { padding: 0.6rem 1rem; }
+            .logo { font-size: 1.4rem; }
+            .logo .ship-icon { font-size: 1.2rem; }
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2rem; }
+            .hero .sub { font-size: 0.9rem; margin-bottom: 1.4rem; }
+            .search-box { border-radius: 32px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.08); padding: 0.3rem; }
+            .search-box .category-select { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); border-radius: 0; padding: 0.5rem 1rem; background-position: right 1rem center; text-align: left; }
+            .search-box input { font-size: 0.95rem; padding: 0.6rem 0.4rem; width: 100%; flex: 1 1 100%; }
+            .search-box .actions { width: 100%; justify-content: flex-end; padding: 0.2rem 0.1rem 0.1rem; gap: 0.1rem; }
+            .search-box .go-btn { padding: 0.4rem 1rem; font-size: 0.8rem; flex: 1; }
+            .lucky-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; margin-left: 0.2rem; }
+            .search-box .action-btn { width: 32px; height: 32px; }
+            .search-box .action-btn svg { width: 16px; height: 16px; }
+            .quick-links { gap: 0.8rem 1.2rem; font-size: 0.75rem; margin-top: 1.8rem; }
+            .footer-stats { font-size: 0.6rem; bottom: 0.8rem; }
+            #cse-results { padding: 1rem; margin: 0.5rem auto 2rem; }
+            .info-panel { padding: 1rem; }
+            .info-panel h2 { font-size: 1.2rem; }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- ─── Battle Canvas ─── -->
-  <canvas id="battleCanvas"></canvas>
+    <!-- ─── Battle Canvas ─── -->
+    <canvas id="battleCanvas"></canvas>
 
-  <!-- ─── App ─── -->
-  <div class="app">
+    <!-- ─── App ─── -->
+    <div class="app">
 
-    <!-- Header -->
-    <header class="header">
-      <div class="logo">
-        <span class="ship-icon">⚓</span> Frigates
-        <span>explore the world</span>
-      </div>
-      <nav class="nav-links">
-        <a href="#">Images</a>
-        <a href="#">Videos</a>
-        <a href="#">News</a>
-        <a href="#">Maps</a>
-        <a href="#">Intel</a>
-      </nav>
-      <div class="user-area">
-        <span class="lang">🌍 EN</span>
-        <div class="avatar" role="button" tabindex="0">⚡</div>
-      </div>
-    </header>
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="ship-icon">⚓</span> Frigates
+                <span>explore the world</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" data-section="images">Images</a>
+                <a href="#" data-section="videos">Videos</a>
+                <a href="#" data-section="news">News</a>
+                <a href="#" data-section="maps">Maps</a>
+                <a href="#" data-section="intel">Intel</a>
+            </nav>
+            <div class="user-area">
+                <span class="lang">🌍 EN</span>
+                <div class="avatar" role="button" tabindex="0">⚡</div>
+            </div>
+        </header>
 
-    <!-- Hero search -->
-    <section class="hero">
-      <h1>Explore the world</h1>
-      <p class="sub">One query. Infinite horizons. Global reach.</p>
+        <!-- Hero search -->
+        <section class="hero">
+            <h1>Explore the world</h1>
+            <p class="sub">One query. Infinite horizons. Global reach.</p>
 
-      <!-- Our custom search box (triggers Google CSE) -->
-      <div class="search-box" id="customSearchBox">
-        <select class="category-select" id="categorySelect" aria-label="Search category">
-          <option value="web">All</option>
-          <option value="images">Images</option>
-          <option value="videos">Videos</option>
-          <option value="news">News</option>
-          <option value="maps">Maps</option>
-        </select>
+            <div class="search-box" id="customSearchBox">
+                <select class="category-select" id="categorySelect" aria-label="Search category">
+                    <option value="web">All</option>
+                    <option value="images">Images</option>
+                    <option value="videos">Videos</option>
+                    <option value="news">News</option>
+                    <option value="maps">Maps</option>
+                </select>
 
-        <span class="icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        </span>
-        <input
-          type="search"
-          id="searchInput"
-          name="q"
-          placeholder="Ask me anything…"
-          aria-label="Search query"
-          autocomplete="off"
-          autofocus
-          maxlength="2000"
-        />
-        <div class="actions">
-          <button class="action-btn" type="button" aria-label="Voice search" title="Voice search" id="voiceBtn">
-            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 14.3V19h-2v2h6v-2h-2v-3.7A5 5 0 0 0 17 11V8h-2v3a3 3 0 0 1-6 0V8H7v3a5 5 0 0 0 4 4.3z"/></svg>
-          </button>
-          <button type="button" class="go-btn" id="searchBtn">Search</button>
-          <button type="button" class="lucky-btn" id="luckyBtn">✨ I'm feeling lucky</button>
+                <span class="icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </span>
+                <input
+                type="search"
+                id="searchInput"
+                name="q"
+                placeholder="Ask me anything…"
+                aria-label="Search query"
+                autocomplete="off"
+                autofocus
+                maxlength="2000"
+                />
+                <div class="actions">
+                    <button class="action-btn" type="button" aria-label="Voice search" title="Voice search" id="voiceBtn">
+                        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 14.3V19h-2v2h6v-2h-2v-3.7A5 5 0 0 0 17 11V8h-2v3a3 3 0 0 1-6 0V8H7v3a5 5 0 0 0 4 4.3z"/></svg>
+                    </button>
+                    <button type="button" class="go-btn" id="searchBtn">Search</button>
+                    <button type="button" class="lucky-btn" id="luckyBtn">✨ I'm feeling lucky</button>
+                </div>
+            </div>
+
+            <!-- Quick links -->
+            <div class="quick-links">
+                <a href="#" data-panel="oceans">Oceans</a>
+                <a href="#" data-panel="naval">Naval</a>
+                <a href="#" data-panel="global">Global</a>
+                <a href="#" data-panel="defense">Defense</a>
+                <a href="#" data-panel="exploration">Exploration</a>
+                <a href="#" data-panel="innovation">Innovation</a>
+            </div>
+        </section>
+
+        <!-- Info Panel (content for quick links) -->
+        <div id="infoPanel" class="info-panel">
+            <!-- dynamically filled -->
         </div>
-      </div>
 
-      <!-- Quick links -->
-      <div class="quick-links">
-        <a href="#">Oceans</a>
-        <a href="#">Naval</a>
-        <a href="#">Global</a>
-        <a href="#">Defense</a>
-        <a href="#">Exploration</a>
-        <a href="#">Innovation</a>
-      </div>
-    </section>
+        <!-- Google CSE Results Container -->
+        <div id="cse-results">
+            <!-- Google CSE will render results here -->
+        </div>
 
-    <!-- Google CSE Results Container -->
-    <div id="cse-results">
-      <!-- Google CSE will render results here -->
+        <div class="footer-stats">
+            <span>⚓ 7 seas covered</span>
+            <span>•</span>
+            <span>📍 190+ nations</span>
+            <span>•</span>
+            <span>⚡ 0.3s response</span>
+        </div>
     </div>
 
-    <div class="footer-stats">
-      <span>⚓ 7 seas covered</span>
-      <span>•</span>
-      <span>📍 190+ nations</span>
-      <span>•</span>
-      <span>⚡ 0.3s response</span>
-    </div>
-  </div>
+    <!-- ─── Google CSE Script (using your provided ID) ─── -->
+    <script async src="https://cse.google.com/cse?cx=b21eef7876cd24cb4"></script>
 
-  <!-- ─── Google CSE Script ─── -->
-  <!-- Replace YOUR_CSE_ID with your actual Programmable Search Engine ID -->
-  <script async src="https://cse.google.com/cse?cx=b21eef7876cd24cb4"></script>
+    <!-- ─── Main Script ─── -->
+    <script>
+        (function() {
+            'use strict';
 
-  <!-- ─── Our scripts ─── -->
-  <script>
-    (function() {
-      'use strict';
+            // ─── Canvas: Enhanced Naval Battle ───
+            const canvas = document.getElementById('battleCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H;
 
-      // ─── Canvas Battle Scene (same as before) ───
-      const canvas = document.getElementById('battleCanvas');
-      const ctx = canvas.getContext('2d');
-      let W, H;
-
-      function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
-      window.addEventListener('resize', resize);
-      resize();
-
-      // Ships, missiles, stars, clouds - same as before
-      class Ship {
-        constructor(x, y, scale, speed, color) {
-          this.x = x;
-          this.y = y;
-          this.scale = scale || 1;
-          this.speed = speed || 0.3;
-          this.color = color || '#2a3a4a';
-          this.waveOffset = Math.random() * Math.PI * 2;
-          this.smokeParticles = [];
-        }
-        update(time) {
-          this.x += this.speed * 0.5;
-          if (this.x > W + 100) this.x = -100;
-          this.waveOffset += 0.02;
-          this.y += Math.sin(this.waveOffset) * 0.08;
-          this.smokeParticles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life -= 0.008;
-            p.size += 0.1;
-          });
-          this.smokeParticles = this.smokeParticles.filter(p => p.life > 0);
-        }
-        draw(ctx) {
-          const s = this.scale;
-          const x = this.x;
-          const y = this.y;
-          ctx.save();
-          ctx.shadowColor = 'rgba(0,0,0,0.3)';
-          ctx.shadowBlur = 20;
-          const hx = x;
-          const hy = y;
-          ctx.beginPath();
-          ctx.moveTo(hx - 70 * s, hy + 10 * s);
-          ctx.quadraticCurveTo(hx - 80 * s, hy + 4 * s, hx - 75 * s, hy - 2 * s);
-          ctx.lineTo(hx - 60 * s, hy - 8 * s);
-          ctx.lineTo(hx - 40 * s, hy - 12 * s);
-          ctx.lineTo(hx + 30 * s, hy - 12 * s);
-          ctx.lineTo(hx + 55 * s, hy - 6 * s);
-          ctx.lineTo(hx + 75 * s, hy + 2 * s);
-          ctx.quadraticCurveTo(hx + 80 * s, hy + 6 * s, hx + 70 * s, hy + 10 * s);
-          ctx.closePath();
-          const grad = ctx.createLinearGradient(hx - 80 * s, hy, hx + 80 * s, hy);
-          grad.addColorStop(0, '#1a2a3a');
-          grad.addColorStop(0.3, this.color);
-          grad.addColorStop(0.7, this.color);
-          grad.addColorStop(1, '#1a2a3a');
-          ctx.fillStyle = grad;
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(100,180,255,0.15)';
-          ctx.lineWidth = 1;
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(hx - 68 * s, hy + 6 * s);
-          ctx.lineTo(hx + 68 * s, hy + 6 * s);
-          ctx.strokeStyle = 'rgba(200,50,50,0.3)';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(40,55,70,0.6)';
-          ctx.fillRect(hx - 55 * s, hy - 10 * s, 95 * s, 4 * s);
-          ctx.fillStyle = 'rgba(50,65,80,0.8)';
-          ctx.fillRect(hx - 20 * s, hy - 22 * s, 40 * s, 12 * s);
-          ctx.fillRect(hx - 10 * s, hy - 30 * s, 20 * s, 8 * s);
-          ctx.fillStyle = 'rgba(100,200,255,0.25)';
-          for (let i = 0; i < 4; i++) {
-            ctx.fillRect(hx - 14 * s + i * 8 * s, hy - 20 * s, 4 * s, 4 * s);
-          }
-          ctx.strokeStyle = 'rgba(180,200,220,0.5)';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(hx + 10 * s, hy - 30 * s);
-          ctx.lineTo(hx + 10 * s, hy - 60 * s);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(hx + 10 * s, hy - 60 * s, 6 * s, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(100,200,255,0.2)';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(hx + 10 * s, hy - 60 * s, 3 * s, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(100,200,255,0.15)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(200,100,50,0.5)';
-          ctx.lineWidth = 1.5;
-          const angle = Date.now() / 2000;
-          ctx.beginPath();
-          ctx.moveTo(hx + 10 * s, hy - 60 * s);
-          ctx.lineTo(hx + 10 * s + 8 * s * Math.cos(angle), hy - 60 * s + 8 * s * Math.sin(angle));
-          ctx.stroke();
-          ctx.fillStyle = 'rgba(60,75,90,0.8)';
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = 'rgba(0,0,0,0.4)';
-          ctx.beginPath();
-          ctx.arc(hx - 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(hx + 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(hx - 5 * s, hy - 6 * s, 5 * s, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.strokeStyle = 'rgba(80,100,120,0.6)';
-          ctx.lineWidth = 2;
-          for (let gx of [-35 * s, 35 * s, -5 * s]) {
-            ctx.beginPath();
-            ctx.moveTo(hx + gx, hy - 6 * s);
-            ctx.lineTo(hx + gx + 10 * s * (gx > 0 ? 1 : -1), hy - 10 * s);
-            ctx.stroke();
-          }
-          const stackX = hx + 5 * s;
-          const stackY = hy - 28 * s;
-          ctx.fillStyle = 'rgba(100,120,140,0.15)';
-          ctx.beginPath();
-          ctx.arc(stackX, stackY, 4 * s, 0, Math.PI * 2);
-          ctx.fill();
-          if (Math.random() < 0.4) {
-            this.smokeParticles.push({
-              x: stackX + (Math.random() - 0.5) * 4 * s,
-              y: stackY - 2 * s,
-              vx: (Math.random() - 0.5) * 0.3,
-              vy: -0.5 - Math.random() * 0.5,
-              life: 0.8 + Math.random() * 0.4,
-              size: 3 * s + Math.random() * 4 * s
-            });
-          }
-          this.smokeParticles.forEach(p => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(180,200,220,${p.life * 0.15})`;
-            ctx.fill();
-          });
-          const blink = Math.sin(Date.now() / 800) > 0.5;
-          if (blink) {
-            ctx.fillStyle = 'rgba(255,50,50,0.6)';
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = 'rgba(255,50,50,0.3)';
-            ctx.beginPath();
-            ctx.arc(hx - 70 * s, hy + 2 * s, 2 * s, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(50,255,50,0.6)';
-            ctx.shadowColor = 'rgba(50,255,50,0.3)';
-            ctx.beginPath();
-            ctx.arc(hx + 70 * s, hy + 2 * s, 2 * s, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          ctx.shadowBlur = 0;
-          ctx.restore();
-        }
-      }
-
-      class Missile {
-        constructor(x, y, targetX, targetY) {
-          this.x = x;
-          this.y = y;
-          this.targetX = targetX || x + 200 + Math.random() * 300;
-          this.targetY = targetY || -50 - Math.random() * 150;
-          this.speed = 1.8 + Math.random() * 1.2;
-          this.trail = [];
-          this.alive = true;
-          this.age = 0;
-          this.angle = 0;
-        }
-        update() {
-          this.age++;
-          const dx = this.targetX - this.x;
-          const dy = this.targetY - this.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 20) { this.alive = false; return; }
-          const angle = Math.atan2(dy, dx);
-          this.x += Math.cos(angle) * this.speed;
-          this.y += Math.sin(angle) * this.speed;
-          this.angle = angle;
-          this.trail.push({ x: this.x, y: this.y, life: 1 });
-          if (this.trail.length > 40) this.trail.shift();
-          this.trail.forEach(p => p.life -= 0.02);
-          this.trail = this.trail.filter(p => p.life > 0);
-          this.x += (Math.random() - 0.5) * 0.3;
-          this.y += (Math.random() - 0.5) * 0.3;
-        }
-        draw(ctx) {
-          this.trail.forEach((p, i) => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 2 * (p.life * 0.8 + 0.2), 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,150,50,${p.life * 0.5})`;
-            ctx.fill();
-          });
-          ctx.save();
-          ctx.translate(this.x, this.y);
-          ctx.rotate(this.angle);
-          const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
-          grad.addColorStop(0, 'rgba(255,200,100,0.15)');
-          grad.addColorStop(1, 'rgba(255,200,100,0)');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(0, 0, 20, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 20;
-          ctx.shadowColor = 'rgba(255,150,50,0.4)';
-          ctx.fillStyle = '#ff8833';
-          ctx.beginPath();
-          ctx.ellipse(0, 0, 6, 2, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#ffcc66';
-          ctx.beginPath();
-          ctx.ellipse(6, 0, 3, 1.5, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = 'rgba(200,150,100,0.6)';
-          ctx.fillRect(-4, -3, 2, 1);
-          ctx.fillRect(-4, 2, 2, 1);
-          ctx.shadowBlur = 30;
-          ctx.shadowColor = 'rgba(255,100,50,0.6)';
-          ctx.fillStyle = 'rgba(255,200,100,0.8)';
-          ctx.beginPath();
-          ctx.arc(-6, 0, 3, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.restore();
-        }
-        isAlive() { return this.alive; }
-      }
-
-      let ships = [];
-      let missiles = [];
-      let stars = [];
-      let clouds = [];
-      let time = 0;
-
-      function initScene() {
-        ships = [
-          new Ship(100, H * 0.78, 1.2, 0.25, '#3a5a7a'),
-          new Ship(450, H * 0.82, 0.9, 0.18, '#4a6a5a'),
-          new Ship(750, H * 0.76, 1.0, 0.22, '#5a4a6a'),
-          new Ship(1100, H * 0.80, 0.8, 0.15, '#3a5a6a'),
-        ];
-        stars = [];
-        for (let i = 0; i < 120; i++) {
-          stars.push({
-            x: Math.random() * W,
-            y: Math.random() * H * 0.6,
-            r: 0.5 + Math.random() * 1.5,
-            twinkle: Math.random() * Math.PI * 2
-          });
-        }
-        clouds = [];
-        for (let i = 0; i < 8; i++) {
-          clouds.push({
-            x: Math.random() * W,
-            y: Math.random() * H * 0.3,
-            w: 60 + Math.random() * 150,
-            h: 20 + Math.random() * 40,
-            speed: 0.1 + Math.random() * 0.2,
-            opacity: 0.05 + Math.random() * 0.1
-          });
-        }
-        launchMissile(ships[0], ships[1]);
-        setTimeout(() => launchMissile(ships[2], ships[0]), 2000);
-        setTimeout(() => launchMissile(ships[1], ships[3]), 4000);
-      }
-
-      function launchMissile(fromShip, targetShip) {
-        if (!fromShip || !targetShip) return;
-        const mx = fromShip.x + 30 * fromShip.scale;
-        const my = fromShip.y - 40 * fromShip.scale;
-        const tx = targetShip.x - 20 * targetShip.scale;
-        const ty = targetShip.y - 30 * targetShip.scale;
-        missiles.push(new Missile(mx, my, tx, ty));
-      }
-
-      setInterval(() => {
-        if (ships.length >= 2) {
-          const idx1 = Math.floor(Math.random() * ships.length);
-          let idx2 = Math.floor(Math.random() * ships.length);
-          while (idx2 === idx1) idx2 = Math.floor(Math.random() * ships.length);
-          if (ships[idx1] && ships[idx2]) {
-            launchMissile(ships[idx1], ships[idx2]);
-          }
-        }
-      }, 3500);
-
-      function drawSea() {
-        const grad = ctx.createLinearGradient(0, H * 0.6, 0, H);
-        grad.addColorStop(0, 'rgba(10,20,45,0.9)');
-        grad.addColorStop(0.3, 'rgba(5,15,35,0.95)');
-        grad.addColorStop(0.7, 'rgba(2,8,25,0.98)');
-        grad.addColorStop(1, 'rgba(0,3,15,1)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, H * 0.6, W, H * 0.4);
-        ctx.beginPath();
-        const waveY = H * 0.6;
-        for (let x = 0; x <= W; x += 2) {
-          const wave1 = Math.sin(x * 0.015 + time * 0.0008) * 8;
-          const wave2 = Math.sin(x * 0.025 + time * 0.0012 + 1.2) * 5;
-          const wave3 = Math.sin(x * 0.04 + time * 0.0018 + 2.5) * 3;
-          const y = waveY + wave1 + wave2 + wave3;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = 'rgba(60,120,200,0.12)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.beginPath();
-        for (let x = 0; x <= W; x += 2) {
-          const wave1 = Math.sin(x * 0.02 + time * 0.001 + 0.8) * 6;
-          const wave2 = Math.sin(x * 0.035 + time * 0.0015 + 2.0) * 4;
-          const y = waveY + 15 + wave1 + wave2;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = 'rgba(80,160,255,0.06)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        for (let i = 0; i < 15; i++) {
-          const fx = (Math.sin(i * 1.7 + time * 0.0005) * 0.5 + 0.5) * W;
-          const fy = H * 0.6 + 8 + Math.sin(i * 2.3 + time * 0.001) * 8;
-          ctx.beginPath();
-          ctx.arc(fx, fy, 3 + Math.sin(time * 0.002 + i) * 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(150,220,255,${0.04 + Math.sin(time * 0.001 + i) * 0.02 + 0.02})`;
-          ctx.fill();
-        }
-        const glow = ctx.createRadialGradient(W / 2, H * 0.58, 0, W / 2, H * 0.58, 200);
-        glow.addColorStop(0, 'rgba(255,200,150,0.06)');
-        glow.addColorStop(0.5, 'rgba(255,150,100,0.03)');
-        glow.addColorStop(1, 'rgba(255,150,100,0)');
-        ctx.fillStyle = glow;
-        ctx.fillRect(0, H * 0.4, W, H * 0.3);
-      }
-
-      function drawSky() {
-        const grad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
-        grad.addColorStop(0, '#050810');
-        grad.addColorStop(0.3, '#0a1525');
-        grad.addColorStop(0.6, '#152035');
-        grad.addColorStop(0.85, '#1a2a40');
-        grad.addColorStop(1, '#1a2a45');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, W, H * 0.6);
-        stars.forEach(s => {
-          const brightness = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.002 + s.twinkle));
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${brightness * 0.6})`;
-          ctx.fill();
-        });
-        clouds.forEach(c => {
-          c.x += c.speed;
-          if (c.x > W + c.w) c.x = -c.w;
-          ctx.fillStyle = `rgba(200,220,255,${c.opacity})`;
-          ctx.beginPath();
-          ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.ellipse(c.x - c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.3, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.ellipse(c.x + c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.3, 0, 0, Math.PI * 2);
-          ctx.fill();
-        });
-        if (Math.random() < 0.003) {
-          const fx = Math.random() * W;
-          const fy = H * 0.2 + Math.random() * H * 0.2;
-          ctx.fillStyle = `rgba(255,200,100,${0.03 + Math.random() * 0.05})`;
-          ctx.beginPath();
-          ctx.arc(fx, fy, 30 + Math.random() * 40, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = `rgba(255,150,50,${0.02 + Math.random() * 0.03})`;
-          ctx.beginPath();
-          ctx.arc(fx, fy, 60 + Math.random() * 50, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      function animate() {
-        time++;
-        ctx.clearRect(0, 0, W, H);
-        drawSky();
-        drawSea();
-        ships.forEach(ship => { ship.update(time); ship.draw(ctx); });
-        missiles.forEach(m => { m.update(); m.draw(ctx); });
-        missiles = missiles.filter(m => m.isAlive());
-        if (Math.random() < 0.002) {
-          const ship = ships[Math.floor(Math.random() * ships.length)];
-          if (ship) {
-            const fx = ship.x + 30 * ship.scale;
-            const fy = ship.y - 40 * ship.scale;
-            ctx.fillStyle = 'rgba(255,200,150,0.15)';
-            ctx.beginPath();
-            ctx.arc(fx, fy, 40, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(255,150,100,0.08)';
-            ctx.beginPath();
-            ctx.arc(fx, fy, 70, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-        requestAnimationFrame(animate);
-      }
-
-      // ─── Google CSE Integration ───
-
-      // The search input and buttons
-      const input = document.getElementById('searchInput');
-      const searchBtn = document.getElementById('searchBtn');
-      const luckyBtn = document.getElementById('luckyBtn');
-      const categorySelect = document.getElementById('categorySelect');
-      const resultsContainer = document.getElementById('cse-results');
-
-      // Function to perform search using Google CSE
-      function performSearch(query) {
-        if (!query.trim()) {
-          input.focus();
-          return;
-        }
-        // Show results container
-        resultsContainer.style.display = 'block';
-        resultsContainer.classList.add('gcse-results-visible');
-        document.body.classList.add('show-results');
-
-        // Use Google's CSE API to render results
-        // The google.search.cse.element.render function is available after the CSE script loads
-        if (window.google && google.search && google.search.cse && google.search.cse.element) {
-          // We'll use the existing element with id "cse-results"
-          // First, clear any previous results
-          resultsContainer.innerHTML = '';
-          // Create a new div for results (Google expects a specific structure)
-          const resultsDiv = document.createElement('div');
-          resultsDiv.className = 'gcse-searchresults';
-          resultsContainer.appendChild(resultsDiv);
-
-          // Render the search results
-          google.search.cse.element.render({
-            div: resultsDiv.id || 'gcse-searchresults',
-            tag: 'searchresults-only',
-            attributes: {
-              linkTarget: '_blank'
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
             }
-          });
+            window.addEventListener('resize', resize);
+            resize();
 
-          // Now execute the query
-          const element = google.search.cse.element.getElement('gcse-searchresults');
-          if (element) {
-            element.execute(query);
-          } else {
-            // Fallback: use the global search function
-            google.search.cse.element.getResults(query);
-          }
-        } else {
-          // Fallback: if Google CSE not loaded, redirect to Google search
-          window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-        }
-      }
+            // ── Ship class with more detail ──
+            class Ship {
+                constructor(x, y, scale, speed, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.scale = scale || 1;
+                    this.speed = speed || 0.3;
+                    this.color = color || '#2a3a4a';
+                    this.waveOffset = Math.random() * Math.PI * 2;
+                    this.smokeParticles = [];
+                    this.wakeParticles = [];
+                    this.health = 100;
+                    this.alive = true;
+                }
+                update(time) {
+                    // Move
+                    this.x += this.speed * 0.5;
+                    if (this.x > W + 150) this.x = -150;
+                    // Bob
+                    this.waveOffset += 0.02;
+                    this.y += Math.sin(this.waveOffset) * 0.08;
 
-      // ── Event listeners ──
+                    // Smoke
+                    this.smokeParticles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.life -= 0.008;
+                        p.size += 0.1;
+                    });
+                    this.smokeParticles = this.smokeParticles.filter(p => p.life > 0);
 
-      // Search button
-      searchBtn.addEventListener('click', function() {
-        performSearch(input.value);
-      });
+                    // Wake (trail of white foam)
+                    if (Math.random() < 0.3) {
+                        this.wakeParticles.push({
+                            x: this.x - 70 * this.scale,
+                            y: this.y + 10 * this.scale + (Math.random() - 0.5) * 10,
+                            life: 1,
+                            size: 2 + Math.random() * 4,
+                            vx: -0.2 - Math.random() * 0.3,
+                            vy: (Math.random() - 0.5) * 0.2
+                        });
+                    }
+                    this.wakeParticles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.life -= 0.02;
+                        p.size *= 0.99;
+                    });
+                    this.wakeParticles = this.wakeParticles.filter(p => p.life > 0);
+                }
+                draw(ctx) {
+                    const s = this.scale;
+                    const hx = this.x;
+                    const hy = this.y;
 
-      // Enter key in input
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          performSearch(input.value);
-        }
-      });
+                    // ── Wake ──
+                    this.wakeParticles.forEach(p => {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(200, 240, 255, ${p.life * 0.3})`;
+                        ctx.fill();
+                    });
 
-      // I'm Feeling Lucky
-      luckyBtn.addEventListener('click', function() {
-        const queries = [
-          'naval history', 'ocean exploration', 'world map',
-          'global news', 'deep sea', 'maritime law',
-          'pacific ocean', 'atlantic crossing', 'arctic exploration',
-          'naval technology', 'sea battles', 'ocean wildlife'
-        ];
-        const randomQuery = queries[Math.floor(Math.random() * queries.length)];
-        input.value = randomQuery;
-        performSearch(randomQuery);
-      });
+                    ctx.save();
+                    // Hull shadow
+                    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                    ctx.shadowBlur = 25;
 
-      // Keyboard shortcut '/'
-      document.addEventListener('keydown', function(e) {
-        if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-          const tag = document.activeElement ? document.activeElement.tagName : '';
-          if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
-            e.preventDefault();
-            input.focus();
-            input.select();
-          }
-        }
-      });
+                    // Main hull
+                    ctx.beginPath();
+                    ctx.moveTo(hx - 70 * s, hy + 10 * s);
+                    ctx.quadraticCurveTo(hx - 85 * s, hy + 4 * s, hx - 75 * s, hy - 2 * s);
+                    ctx.lineTo(hx - 60 * s, hy - 8 * s);
+                    ctx.lineTo(hx - 40 * s, hy - 12 * s);
+                    ctx.lineTo(hx + 30 * s, hy - 12 * s);
+                    ctx.lineTo(hx + 55 * s, hy - 6 * s);
+                    ctx.lineTo(hx + 75 * s, hy + 2 * s);
+                    ctx.quadraticCurveTo(hx + 85 * s, hy + 6 * s, hx + 70 * s, hy + 10 * s);
+                    ctx.closePath();
+                    const grad = ctx.createLinearGradient(hx - 80 * s, hy, hx + 80 * s, hy);
+                    grad.addColorStop(0, '#1a2a3a');
+                    grad.addColorStop(0.3, this.color);
+                    grad.addColorStop(0.7, this.color);
+                    grad.addColorStop(1, '#1a2a3a');
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(100,180,255,0.15)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
 
-      // Avatar click
-      document.querySelector('.avatar')?.addEventListener('click', () => {
-        alert('⚓ Your naval command center — coming soon!');
-      });
+                    // Waterline
+                    ctx.beginPath();
+                    ctx.moveTo(hx - 68 * s, hy + 6 * s);
+                    ctx.lineTo(hx + 68 * s, hy + 6 * s);
+                    ctx.strokeStyle = 'rgba(200,50,50,0.3)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
 
-      // Voice button (demo)
-      document.getElementById('voiceBtn')?.addEventListener('click', () => {
-        if ('webkitSpeechRecognition' in window) {
-          alert('🎤 Voice command ready! (demo)');
-        } else {
-          alert('🎤 Voice not supported in this browser.');
-        }
-      });
+                    ctx.shadowBlur = 0;
 
-      // ── Start the battle scene ──
-      initScene();
-      animate();
+                    // Deck
+                    ctx.fillStyle = 'rgba(40,55,70,0.6)';
+                    ctx.fillRect(hx - 55 * s, hy - 10 * s, 95 * s, 4 * s);
 
-      window.addEventListener('resize', () => {
-        resize();
-        ships.forEach((ship, i) => {
-          ship.x = Math.min(ship.x, W - 50);
-          ship.y = H * (0.76 + i * 0.02);
-        });
-      });
+                    // Superstructure
+                    ctx.fillStyle = 'rgba(50,65,80,0.8)';
+                    ctx.fillRect(hx - 20 * s, hy - 22 * s, 40 * s, 12 * s);
+                    ctx.fillRect(hx - 10 * s, hy - 30 * s, 20 * s, 8 * s);
 
-      console.log('⚓ Frigates with Google CSE ready — explore the world!');
-    })();
-  </script>
+                    // Bridge windows
+                    ctx.fillStyle = 'rgba(100,200,255,0.25)';
+                    for (let i = 0; i < 4; i++) {
+                        ctx.fillRect(hx - 14 * s + i * 8 * s, hy - 20 * s, 4 * s, 4 * s);
+                    }
+
+                    // Mast & radar
+                    ctx.strokeStyle = 'rgba(180,200,220,0.5)';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(hx + 10 * s, hy - 30 * s);
+                    ctx.lineTo(hx + 10 * s, hy - 65 * s);
+                    ctx.stroke();
+
+                    // Radar dish
+                    ctx.beginPath();
+                    ctx.arc(hx + 10 * s, hy - 65 * s, 6 * s, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(100,200,255,0.2)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(hx + 10 * s, hy - 65 * s, 3 * s, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(100,200,255,0.15)';
+                    ctx.fill();
+
+                    // Radar arm (rotating)
+                    ctx.strokeStyle = 'rgba(200,100,50,0.5)';
+                    ctx.lineWidth = 1.5;
+                    const angle = Date.now() / 2000;
+                    ctx.beginPath();
+                    ctx.moveTo(hx + 10 * s, hy - 65 * s);
+                    ctx.lineTo(hx + 10 * s + 8 * s * Math.cos(angle), hy - 65 * s + 8 * s * Math.sin(angle));
+                    ctx.stroke();
+
+                    // Gun turrets
+                    ctx.fillStyle = 'rgba(60,75,90,0.8)';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                    // Forward
+                    ctx.beginPath();
+                    ctx.arc(hx - 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Aft
+                    ctx.beginPath();
+                    ctx.arc(hx + 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Mid
+                    ctx.beginPath();
+                    ctx.arc(hx - 5 * s, hy - 6 * s, 5 * s, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    // Gun barrels
+                    ctx.strokeStyle = 'rgba(80,100,120,0.6)';
+                    ctx.lineWidth = 2;
+                    for (let gx of [-35 * s, 35 * s, -5 * s]) {
+                        ctx.beginPath();
+                        ctx.moveTo(hx + gx, hy - 6 * s);
+                        ctx.lineTo(hx + gx + 10 * s * (gx > 0 ? 1 : -1), hy - 10 * s);
+                        ctx.stroke();
+                    }
+
+                    // Stack smoke
+                    const stackX = hx + 5 * s;
+                    const stackY = hy - 28 * s;
+                    ctx.fillStyle = 'rgba(100,120,140,0.15)';
+                    ctx.beginPath();
+                    ctx.arc(stackX, stackY, 4 * s, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (Math.random() < 0.4) {
+                        this.smokeParticles.push({
+                            x: stackX + (Math.random() - 0.5) * 4 * s,
+                            y: stackY - 2 * s,
+                            vx: (Math.random() - 0.5) * 0.3,
+                            vy: -0.5 - Math.random() * 0.5,
+                            life: 0.8 + Math.random() * 0.4,
+                            size: 3 * s + Math.random() * 4 * s
+                        });
+                    }
+                    this.smokeParticles.forEach(p => {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(180,200,220,${p.life * 0.15})`;
+                        ctx.fill();
+                    });
+
+                    // Running lights
+                    const blink = Math.sin(Date.now() / 800) > 0.5;
+                    if (blink) {
+                        ctx.fillStyle = 'rgba(255,50,50,0.6)';
+                        ctx.shadowBlur = 15;
+                        ctx.shadowColor = 'rgba(255,50,50,0.3)';
+                        ctx.beginPath();
+                        ctx.arc(hx - 70 * s, hy + 2 * s, 2 * s, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = 'rgba(50,255,50,0.6)';
+                        ctx.shadowColor = 'rgba(50,255,50,0.3)';
+                        ctx.beginPath();
+                        ctx.arc(hx + 70 * s, hy + 2 * s, 2 * s, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.shadowBlur = 0;
+                    ctx.restore();
+                }
+            }
+
+            // ── Enhanced Missile with exhaust particles ──
+            class Missile {
+                constructor(x, y, targetX, targetY) {
+                    this.x = x;
+                    this.y = y;
+                    this.targetX = targetX || x + 200 + Math.random() * 300;
+                    this.targetY = targetY || -50 - Math.random() * 150;
+                    this.speed = 1.8 + Math.random() * 1.2;
+                    this.trail = [];
+                    this.exhaust = [];
+                    this.alive = true;
+                    this.angle = 0;
+                    this.exploded = false;
+                    this.explosionTimer = 0;
+                }
+                update() {
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 20) {
+                        this.alive = false;
+                        this.exploded = true;
+                        this.explosionTimer = 60; // frames of explosion
+                        return;
+                    }
+                    const angle = Math.atan2(dy, dx);
+                    this.x += Math.cos(angle) * this.speed;
+                    this.y += Math.sin(angle) * this.speed;
+                    this.angle = angle;
+
+                    // Trail
+                    this.trail.push({ x: this.x, y: this.y, life: 1 });
+                    if (this.trail.length > 40) this.trail.shift();
+                    this.trail.forEach(p => p.life -= 0.02);
+                    this.trail = this.trail.filter(p => p.life > 0);
+
+                    // Exhaust particles
+                    for (let i = 0; i < 2; i++) {
+                        this.exhaust.push({
+                            x: this.x - 6 * Math.cos(angle),
+                            y: this.y - 6 * Math.sin(angle),
+                            vx: -Math.cos(angle) * (0.5 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.3,
+                            vy: -Math.sin(angle) * (0.5 + Math.random() * 0.5) + (Math.random() - 0.5) * 0.3,
+                            life: 0.6 + Math.random() * 0.4,
+                            size: 2 + Math.random() * 4
+                        });
+                    }
+                    this.exhaust.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.life -= 0.02;
+                        p.size *= 0.98;
+                    });
+                    this.exhaust = this.exhaust.filter(p => p.life > 0);
+
+                    // Wobble
+                    this.x += (Math.random() - 0.5) * 0.3;
+                    this.y += (Math.random() - 0.5) * 0.3;
+                }
+                draw(ctx) {
+                    // Exhaust glow
+                    this.exhaust.forEach(p => {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(255, 180, 50, ${p.life * 0.4})`;
+                        ctx.fill();
+                    });
+
+                    // Trail
+                    this.trail.forEach(p => {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 2 * (p.life * 0.8 + 0.2), 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(255,150,50,${p.life * 0.5})`;
+                        ctx.fill();
+                    });
+
+                    // Missile body
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+
+                    // Glow
+                    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
+                    grad.addColorStop(0, 'rgba(255,200,100,0.15)');
+                    grad.addColorStop(1, 'rgba(255,200,100,0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 20, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Body
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = 'rgba(255,150,50,0.4)';
+                    ctx.fillStyle = '#ff8833';
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 6, 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Nose
+                    ctx.fillStyle = '#ffcc66';
+                    ctx.beginPath();
+                    ctx.ellipse(6, 0, 3, 1.5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Fins
+                    ctx.fillStyle = 'rgba(200,150,100,0.6)';
+                    ctx.fillRect(-4, -3, 2, 1);
+                    ctx.fillRect(-4, 2, 2, 1);
+
+                    // Engine glow
+                    ctx.shadowBlur = 30;
+                    ctx.shadowColor = 'rgba(255,100,50,0.6)';
+                    ctx.fillStyle = 'rgba(255,200,100,0.8)';
+                    ctx.beginPath();
+                    ctx.arc(-6, 0, 3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.shadowBlur = 0;
+                    ctx.restore();
+                }
+                isAlive() { return this.alive || this.exploded; }
+            }
+
+            // ── Explosion effect (particle system) ──
+            let explosions = [];
+
+            function createExplosion(x, y) {
+                const count = 40 + Math.floor(Math.random() * 30);
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 1 + Math.random() * 3;
+                    const size = 3 + Math.random() * 6;
+                    explosions.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 0.8 + Math.random() * 0.6,
+                        size: size,
+                        color: `hsl(${30 + Math.random() * 30}, 100%, ${50 + Math.random() * 30}%)`
+                    });
+                }
+            }
+
+            // ── Scene state ──
+            let ships = [];
+            let missiles = [];
+            let stars = [];
+            let clouds = [];
+            let time = 0;
+
+            function initScene() {
+                ships = [
+                    new Ship(100, H * 0.78, 1.2, 0.25, '#3a5a7a'),
+                    new Ship(450, H * 0.82, 0.9, 0.18, '#4a6a5a'),
+                    new Ship(750, H * 0.76, 1.0, 0.22, '#5a4a6a'),
+                    new Ship(1100, H * 0.80, 0.8, 0.15, '#3a5a6a'),
+                ];
+                stars = [];
+                for (let i = 0; i < 120; i++) {
+                    stars.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H * 0.6,
+                        r: 0.5 + Math.random() * 1.5,
+                        twinkle: Math.random() * Math.PI * 2
+                    });
+                }
+                clouds = [];
+                for (let i = 0; i < 8; i++) {
+                    clouds.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H * 0.3,
+                        w: 60 + Math.random() * 150,
+                        h: 20 + Math.random() * 40,
+                        speed: 0.1 + Math.random() * 0.2,
+                        opacity: 0.05 + Math.random() * 0.1
+                    });
+                }
+                // Initial missiles
+                launchMissile(ships[0], ships[1]);
+                setTimeout(() => launchMissile(ships[2], ships[0]), 2000);
+                setTimeout(() => launchMissile(ships[1], ships[3]), 4000);
+            }
+
+            function launchMissile(fromShip, targetShip) {
+                if (!fromShip || !targetShip) return;
+                const mx = fromShip.x + 30 * fromShip.scale;
+                const my = fromShip.y - 40 * fromShip.scale;
+                const tx = targetShip.x - 20 * targetShip.scale;
+                const ty = targetShip.y - 30 * targetShip.scale;
+                missiles.push(new Missile(mx, my, tx, ty));
+            }
+
+            setInterval(() => {
+                if (ships.length >= 2) {
+                    const idx1 = Math.floor(Math.random() * ships.length);
+                    let idx2 = Math.floor(Math.random() * ships.length);
+                    while (idx2 === idx1) idx2 = Math.floor(Math.random() * ships.length);
+                    if (ships[idx1] && ships[idx2]) {
+                        launchMissile(ships[idx1], ships[idx2]);
+                    }
+                }
+            }, 3500);
+
+            // ── Draw sea ──
+            function drawSea() {
+                const grad = ctx.createLinearGradient(0, H * 0.6, 0, H);
+                grad.addColorStop(0, 'rgba(10,20,45,0.9)');
+                grad.addColorStop(0.3, 'rgba(5,15,35,0.95)');
+                grad.addColorStop(0.7, 'rgba(2,8,25,0.98)');
+                grad.addColorStop(1, 'rgba(0,3,15,1)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, H * 0.6, W, H * 0.4);
+
+                // Waves
+                ctx.beginPath();
+                const waveY = H * 0.6;
+                for (let x = 0; x <= W; x += 2) {
+                    const wave1 = Math.sin(x * 0.015 + time * 0.0008) * 8;
+                    const wave2 = Math.sin(x * 0.025 + time * 0.0012 + 1.2) * 5;
+                    const wave3 = Math.sin(x * 0.04 + time * 0.0018 + 2.5) * 3;
+                    const y = waveY + wave1 + wave2 + wave3;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = 'rgba(60,120,200,0.12)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Second wave
+                ctx.beginPath();
+                for (let x = 0; x <= W; x += 2) {
+                    const wave1 = Math.sin(x * 0.02 + time * 0.001 + 0.8) * 6;
+                    const wave2 = Math.sin(x * 0.035 + time * 0.0015 + 2.0) * 4;
+                    const y = waveY + 15 + wave1 + wave2;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = 'rgba(80,160,255,0.06)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Foam
+                for (let i = 0; i < 15; i++) {
+                    const fx = (Math.sin(i * 1.7 + time * 0.0005) * 0.5 + 0.5) * W;
+                    const fy = waveY + 8 + Math.sin(i * 2.3 + time * 0.001) * 8;
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, 3 + Math.sin(time * 0.002 + i) * 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(150,220,255,${0.04 + Math.sin(time * 0.001 + i) * 0.02 + 0.02})`;
+                    ctx.fill();
+                }
+
+                // Horizon glow
+                const glow = ctx.createRadialGradient(W / 2, H * 0.58, 0, W / 2, H * 0.58, 200);
+                glow.addColorStop(0, 'rgba(255,200,150,0.06)');
+                glow.addColorStop(0.5, 'rgba(255,150,100,0.03)');
+                glow.addColorStop(1, 'rgba(255,150,100,0)');
+                ctx.fillStyle = glow;
+                ctx.fillRect(0, H * 0.4, W, H * 0.3);
+            }
+
+            // ── Draw sky ──
+            function drawSky() {
+                const grad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+                grad.addColorStop(0, '#050810');
+                grad.addColorStop(0.3, '#0a1525');
+                grad.addColorStop(0.6, '#152035');
+                grad.addColorStop(0.85, '#1a2a40');
+                grad.addColorStop(1, '#1a2a45');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, W, H * 0.6);
+                stars.forEach(s => {
+                    const brightness = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.002 + s.twinkle));
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${brightness * 0.6})`;
+                    ctx.fill();
+                });
+                clouds.forEach(c => {
+                    c.x += c.speed;
+                    if (c.x > W + c.w) c.x = -c.w;
+                    ctx.fillStyle = `rgba(200,220,255,${c.opacity})`;
+                    ctx.beginPath();
+                    ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(c.x - c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(c.x + c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                // Distant flashes
+                if (Math.random() < 0.003) {
+                    const fx = Math.random() * W;
+                    const fy = H * 0.2 + Math.random() * H * 0.2;
+                    ctx.fillStyle = `rgba(255,200,100,${0.03 + Math.random() * 0.05})`;
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, 30 + Math.random() * 40, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = `rgba(255,150,50,${0.02 + Math.random() * 0.03})`;
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, 60 + Math.random() * 50, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // ── Animation loop ──
+            function animate() {
+                time++;
+                ctx.clearRect(0, 0, W, H);
+                drawSky();
+                drawSea();
+
+                // Update & draw ships
+                ships.forEach(ship => { ship.update(time);
+                    ship.draw(ctx); });
+
+                // Update missiles & handle explosions
+                const newMissiles = [];
+                missiles.forEach(m => {
+                    m.update();
+                    if (m.exploded && m.explosionTimer > 0) {
+                        // Create explosion particles
+                        if (m.explosionTimer === 60) {
+                            createExplosion(m.x, m.y);
+                        }
+                        m.explosionTimer--;
+                        if (m.explosionTimer > 0) {
+                            newMissiles.push(m);
+                        }
+                    } else if (m.alive) {
+                        m.draw(ctx);
+                        newMissiles.push(m);
+                    }
+                });
+                missiles = newMissiles;
+
+                // Update explosions
+                explosions.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05; // gravity
+                    p.life -= 0.01;
+                    p.size *= 0.99;
+                });
+                explosions = explosions.filter(p => p.life > 0);
+                explosions.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color.replace(')', `, ${p.life})`).replace('hsl', 'hsla');
+                    ctx.fill();
+                });
+
+                // Random launch flash
+                if (Math.random() < 0.002) {
+                    const ship = ships[Math.floor(Math.random() * ships.length)];
+                    if (ship) {
+                        const fx = ship.x + 30 * ship.scale;
+                        const fy = ship.y - 40 * ship.scale;
+                        ctx.fillStyle = 'rgba(255,200,150,0.15)';
+                        ctx.beginPath();
+                        ctx.arc(fx, fy, 40, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = 'rgba(255,150,100,0.08)';
+                        ctx.beginPath();
+                        ctx.arc(fx, fy, 70, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            // ─── Quick Links / Info Panels ───
+            const infoPanel = document.getElementById('infoPanel');
+            const quickLinks = document.querySelectorAll('.quick-links a');
+
+            // Data for each panel
+            const panelData = {
+                oceans: {
+                    title: '🌊 Oceans',
+                    content: `
+                            <p>The world's oceans cover over 70% of Earth's surface. They regulate climate, support diverse marine life, and are vital to global trade and exploration. From the Pacific to the Atlantic, the oceans hold countless mysteries and resources.</p>
+                            <p>Explore oceanography, marine biology, and the future of sustainable ocean use.</p>
+                        `
+                },
+                naval: {
+                    title: '⚓ Naval',
+                    content: `
+                            <p>Naval forces protect maritime interests, secure sea lanes, and project power across the globe. Modern navies include advanced warships, submarines, and aircraft carriers.</p>
+                            <p>Learn about naval history, current fleets, and the technology shaping naval warfare.</p>
+                        `
+                },
+                global: {
+                    title: '🌍 Global',
+                    content: `
+                            <p>Our world is more interconnected than ever. Global trade, communication, and cultural exchange shape our daily lives. Explore global issues, international relations, and the shared challenges we face.</p>
+                            <p>From climate change to economic development, the global perspective is essential for understanding our future.</p>
+                        `
+                },
+                defense: {
+                    title: '🛡️ Defense',
+                    content: `
+                            <p>Defense encompasses national security, military strategy, and the protection of citizens. It involves cutting-edge technology, intelligence, and diplomacy.</p>
+                            <p>Stay informed about defense policies, cybersecurity, and the evolving landscape of global security.</p>
+                        `
+                },
+                exploration: {
+                    title: '🚀 Exploration',
+                    content: `
+                            <p>Exploration drives human progress. From deep-sea diving to space travel, we push the boundaries of knowledge and capability.</p>
+                            <p>Discover the latest in exploration, from oceanic trenches to distant planets, and the pioneers who lead the way.</p>
+                        `
+                },
+                innovation: {
+                    title: '💡 Innovation',
+                    content: `
+                            <p>Innovation is the engine of progress. It transforms ideas into solutions that improve lives and shape the future.</p>
+                            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border-left: 3px solid #60a5fa;">
+                                <h3 style="color: #60a5fa; font-weight: 600; margin-bottom: 0.5rem;">Meet the Developer</h3>
+                                <p style="margin-bottom: 0.5rem;">
+                                    <strong>John Karanja</strong> – a passionate <span class="highlight">IT engineer</span> from Kenya, on a mission to build technology that connects and empowers communities across Africa. With a deep interest in web development, AI, and scalable systems, John is dedicated to solving real-world problems through elegant code and innovative thinking.
+                                </p>
+                                <p style="margin-bottom: 0.5rem;">
+                                    He believes that technology should be accessible, inclusive, and impactful. Currently exploring the intersection of maritime operations and digital innovation, John is excited to contribute to the global tech ecosystem.
+                                </p>
+                                <a href="https://wa.me/254717616895" target="_blank" class="whatsapp-btn" rel="noopener noreferrer">
+                                    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    Connect on WhatsApp
+                                </a>
+                            </div>
+                        `
+                }
+            };
+
+            quickLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const panel = this.dataset.panel;
+                    if (panel && panelData[panel]) {
+                        // Close any open info panels (just one)
+                        infoPanel.classList.remove('visible');
+                        // Populate and show
+                        infoPanel.innerHTML = `
+                                <h2>${panelData[panel].title}</h2>
+                                ${panelData[panel].content}
+                            `;
+                        infoPanel.classList.add('visible');
+                        // Scroll to it
+                        infoPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // If results are visible, hide them? Optional
+                        // We'll keep both.
+                    }
+                });
+            });
+
+            // ─── Search (Google CSE) with no redirects ───
+            const input = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const luckyBtn = document.getElementById('luckyBtn');
+            const resultsContainer = document.getElementById('cse-results');
+
+            // Wait for CSE to load
+            let cseReady = false;
+            let cseElement = null;
+
+            function initCSE() {
+                if (window.google && google.search && google.search.cse && google.search.cse.element) {
+                    cseReady = true;
+                    const resultsDiv = document.createElement('div');
+                    resultsDiv.id = 'gcse-results-div';
+                    resultsContainer.appendChild(resultsDiv);
+
+                    google.search.cse.element.render({
+                        div: 'gcse-results-div',
+                        tag: 'searchresults-only',
+                        attributes: {
+                            linkTarget: '_blank'
+                        }
+                    });
+                    cseElement = google.search.cse.element.getElement('gcse-results-div');
+                    console.log('[Frigates] Google CSE ready');
+                } else {
+                    setTimeout(initCSE, 500);
+                }
+            }
+
+            window.addEventListener('load', initCSE);
+
+            function performSearch(query) {
+                if (!query.trim()) {
+                    input.focus();
+                    return;
+                }
+                // Show results container
+                resultsContainer.style.display = 'block';
+                resultsContainer.classList.add('gcse-results-visible');
+                document.body.classList.add('show-results');
+
+                if (cseReady && cseElement) {
+                    cseElement.execute(query);
+                } else {
+                    // If CSE not ready, show a message and try again
+                    resultsContainer.innerHTML =
+                        '<p style="color: rgba(255,255,255,0.7); text-align: center;">⏳ Loading search engine... Please try again in a moment.</p>';
+                    initCSE();
+                    setTimeout(() => {
+                        if (cseReady && cseElement) {
+                            cseElement.execute(query);
+                            resultsContainer.innerHTML = '';
+                        }
+                    }, 1500);
+                }
+            }
+
+            // Event listeners (no redirects)
+            searchBtn.addEventListener('click', function() {
+                performSearch(input.value);
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch(input.value);
+                }
+            });
+
+            luckyBtn.addEventListener('click', function() {
+                const queries = [
+                    'naval history', 'ocean exploration', 'world map',
+                    'global news', 'deep sea', 'maritime law',
+                    'pacific ocean', 'atlantic crossing', 'arctic exploration',
+                    'naval technology', 'sea battles', 'ocean wildlife'
+                ];
+                const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+                input.value = randomQuery;
+                performSearch(randomQuery);
+            });
+
+            // Keyboard shortcut '/'
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    const tag = document.activeElement ? document.activeElement.tagName : '';
+                    if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+                        e.preventDefault();
+                        input.focus();
+                        input.select();
+                    }
+                }
+            });
+
+            // Nav links (prevent default)
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    if (section) {
+                        // Optionally perform a search for that section
+                        input.value = section;
+                        performSearch(section);
+                    }
+                });
+            });
+
+            // Avatar click
+            document.querySelector('.avatar')?.addEventListener('click', () => {
+                alert('⚓ Your naval command center — coming soon!');
+            });
+
+            // Voice button
+            document.getElementById('voiceBtn')?.addEventListener('click', () => {
+                if ('webkitSpeechRecognition' in window) {
+                    alert('🎤 Voice command ready! (demo)');
+                } else {
+                    alert('🎤 Voice not supported in this browser.');
+                }
+            });
+
+            // ── Start the battle scene ──
+            initScene();
+            animate();
+
+            window.addEventListener('resize', () => {
+                resize();
+                ships.forEach((ship, i) => {
+                    ship.x = Math.min(ship.x, W - 50);
+                    ship.y = H * (0.76 + i * 0.02);
+                });
+            });
+
+            console.log('⚓ Frigates ready — zero redirects, enhanced combat, and interactive info!');
+        })();
+    </script>
 </body>
 </html>
