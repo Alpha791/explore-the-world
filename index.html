@@ -451,61 +451,131 @@
             font-weight: 500;
         }
 
-        /* ── Innovation Panel Creative Styles ── */
+        /* ── Innovation Panel - Collapsible Box ── */
         .info-panel.innovation-panel {
             border: 1px solid rgba(96, 165, 250, 0.2);
             box-shadow: 0 0 40px rgba(96, 165, 250, 0.05);
         }
-        .info-panel .manifesto {
+
+        /* Collapsible toggle for Innovation */
+        .collapsible-box {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(96, 165, 250, 0.1);
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+            gap: 1rem;
+        }
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .collapsible-header .title-section {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .collapsible-header .title-section .badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            color: #05080f;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .collapsible-header .title-section .title-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e8efff;
+        }
+        .collapsible-header .title-section .subtitle {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+        }
+        .collapsible-header .toggle-icon {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.4);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .collapsible-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-body {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+        .collapsible-body.open {
+            display: block;
+        }
+
+        /* Innovation inner styles */
+        .collapsible-body .manifesto {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
+            gap: 1rem;
+            margin: 1rem 0;
         }
-        .info-panel .manifesto-item {
+        .collapsible-body .manifesto-item {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
-            padding: 1rem 1.2rem;
+            padding: 0.8rem 1.2rem;
             border-left: 2px solid #60a5fa;
         }
-        .info-panel .manifesto-item .label {
-            font-size: 0.7rem;
+        .collapsible-body .manifesto-item .label {
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: rgba(255, 255, 255, 0.3);
         }
-        .info-panel .manifesto-item .value {
-            font-size: 1rem;
+        .collapsible-body .manifesto-item .value {
+            font-size: 0.95rem;
             font-weight: 500;
             color: #e0e8f0;
-            margin-top: 0.2rem;
+            margin-top: 0.1rem;
         }
-        .info-panel .divider {
+        .collapsible-body .divider {
             width: 100%;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.3), transparent);
-            margin: 1.5rem 0;
+            margin: 1.2rem 0;
         }
-
-        .info-panel .whatsapp-btn {
+        .collapsible-body .whatsapp-btn {
             display: inline-block;
             background: #25D366;
             color: #fff;
-            padding: 0.6rem 1.8rem;
+            padding: 0.5rem 1.5rem;
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 0.5rem;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
-        .info-panel .whatsapp-btn:hover {
+        .collapsible-body .whatsapp-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
         }
-        .info-panel .whatsapp-btn svg {
+        .collapsible-body .whatsapp-btn svg {
             vertical-align: middle;
             margin-right: 0.5rem;
             fill: currentColor;
@@ -544,7 +614,10 @@
             .info-panel { padding: 1.5rem; }
             .info-panel h2 { font-size: 1.5rem; }
             .info-panel .close-panel { font-size: 1.5rem; top: 0.8rem; right: 1rem; }
-            .info-panel .manifesto { grid-template-columns: 1fr; }
+            .collapsible-body .manifesto { grid-template-columns: 1fr; }
+            .collapsible-header { padding: 0.8rem 1rem; }
+            .collapsible-header .title-section .subtitle { display: none; }
+            .collapsible-body { padding: 0 1rem 1rem 1rem; }
         }
 
         @media (max-width: 480px) {
@@ -568,6 +641,7 @@
             .info-panel { padding: 1rem; }
             .info-panel h2 { font-size: 1.2rem; }
             .info-panel .close-panel { font-size: 1.3rem; top: 0.5rem; right: 0.8rem; }
+            .collapsible-header .title-section .badge { width: 28px; height: 28px; font-size: 0.7rem; }
         }
     </style>
 </head>
@@ -645,7 +719,7 @@
                 <a href="#" data-panel="global">Global</a>
                 <a href="#" data-panel="defense">Defense</a>
                 <a href="#" data-panel="exploration">Exploration</a>
-                <a href="#" data-panel="innovation">Innovation</a>
+                <a href="#" data-panel="innovation" class="innovation-link">Innovation</a>
             </div>
         </section>
 
@@ -901,6 +975,65 @@
             const closePanelBtn = document.getElementById('closeInfoPanel');
             const quickLinks = document.querySelectorAll('.quick-links a');
 
+            // ─── Innovation Panel HTML (with collapsible/minimizable box) ───
+            const innovationHTML = `
+                    <h2>💡 Innovation · Tech Manifesto</h2>
+                    <p style="font-size: 1.1rem; font-weight: 300; color: #a0b0c0; margin-bottom: 1rem;">
+                        Innovation is the engine of progress. It transforms ideas into solutions that improve lives and shape the future.
+                    </p>
+
+                    <div class="collapsible-box" id="innovationCollapsible">
+                        <div class="collapsible-header" id="collapsibleToggle">
+                            <div class="title-section">
+                                <div class="badge">JK</div>
+                                <div>
+                                    <div class="title-text">John Karanja</div>
+                                    <div class="subtitle">IT Engineer · Tech Visionary · Kenya</div>
+                                </div>
+                            </div>
+                            <span class="toggle-icon open" id="toggleIcon">▼</span>
+                        </div>
+                        <div class="collapsible-body open" id="collapsibleBody">
+                            <p style="margin-bottom: 1rem; color: #d0d8e8;">
+                                <span class="highlight">Mission-driven engineer</span> from Kenya, building technology that connects and empowers communities across Africa. Specializing in web development, AI, and scalable systems, John is dedicated to solving real-world problems through elegant code and innovative thinking.
+                            </p>
+
+                            <div class="manifesto">
+                                <div class="manifesto-item">
+                                    <div class="label">🚀 Mission</div>
+                                    <div class="value">Build tech that connects & empowers African communities</div>
+                                </div>
+                                <div class="manifesto-item">
+                                    <div class="label">💡 Expertise</div>
+                                    <div class="value">Web Dev · AI · Scalable Systems</div>
+                                </div>
+                                <div class="manifesto-item">
+                                    <div class="label">🌍 Vision</div>
+                                    <div class="value">Accessible, inclusive, impactful technology for all</div>
+                                </div>
+                                <div class="manifesto-item">
+                                    <div class="label">⚡ Current Focus</div>
+                                    <div class="value">Maritime operations × Digital innovation</div>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <p style="color: #a0b0c0; text-align: center; font-style: italic; margin-bottom: 1rem;">
+                                "Technology should be a bridge, not a barrier. Let's build the future, together."
+                            </p>
+
+                            <div style="text-align: center;">
+                                <a href="https://wa.me/254717616895" target="_blank" class="whatsapp-btn" rel="noopener noreferrer">
+                                    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    Connect on WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            // ─── Panel data ───
             const panelData = {
                 oceans: {
                     title: '🌊 Oceans',
@@ -939,59 +1072,11 @@
                 },
                 innovation: {
                     title: '💡 Innovation · Tech Manifesto',
-                    content: `
-                            <p style="font-size: 1.1rem; font-weight: 300; color: #a0b0c0; margin-bottom: 1.5rem;">
-                                Innovation is the engine of progress. It transforms ideas into solutions that improve lives and shape the future.
-                            </p>
-                            <div style="background: rgba(255,255,255,0.02); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(96, 165, 250, 0.1); margin-bottom: 1.5rem;">
-                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #60a5fa, #a78bfa); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #05080f; font-weight: 700; flex-shrink: 0;">JK</div>
-                                    <div>
-                                        <h3 style="color: #fff; font-size: 1.4rem; font-weight: 600; margin-bottom: 0.1rem;">John Karanja</h3>
-                                        <p style="color: #60a5fa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">IT Engineer · Tech Visionary</p>
-                                    </div>
-                                </div>
-                                <p style="margin-bottom: 1rem; color: #d0d8e8;">
-                                    <span class="highlight">Mission-driven engineer</span> from Kenya, building technology that connects and empowers communities across Africa. Specializing in web development, AI, and scalable systems, John is dedicated to solving real-world problems through elegant code and innovative thinking.
-                                </p>
-                            </div>
-
-                            <div class="manifesto">
-                                <div class="manifesto-item">
-                                    <div class="label">🚀 Mission</div>
-                                    <div class="value">Build tech that connects & empowers African communities</div>
-                                </div>
-                                <div class="manifesto-item">
-                                    <div class="label">💡 Expertise</div>
-                                    <div class="value">Web Dev · AI · Scalable Systems</div>
-                                </div>
-                                <div class="manifesto-item">
-                                    <div class="label">🌍 Vision</div>
-                                    <div class="value">Accessible, inclusive, impactful technology for all</div>
-                                </div>
-                                <div class="manifesto-item">
-                                    <div class="label">⚡ Current Focus</div>
-                                    <div class="value">Maritime operations × Digital innovation</div>
-                                </div>
-                            </div>
-
-                            <div class="divider"></div>
-
-                            <p style="color: #a0b0c0; text-align: center; font-style: italic; margin-bottom: 1rem;">
-                                "Technology should be a bridge, not a barrier. Let's build the future, together."
-                            </p>
-
-                            <div style="text-align: center;">
-                                <a href="https://wa.me/254717616895" target="_blank" class="whatsapp-btn" rel="noopener noreferrer">
-                                    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                    Connect on WhatsApp
-                                </a>
-                            </div>
-                        `
+                    content: innovationHTML
                 }
             };
 
-            // Function to show panel
+            // ─── Function to show panel ───
             function showPanel(panelKey) {
                 if (panelKey && panelData[panelKey]) {
                     const isInnovation = panelKey === 'innovation';
@@ -1000,21 +1085,52 @@
                     } else {
                         infoPanel.classList.remove('innovation-panel');
                     }
+
+                    // For innovation, the content already includes the collapsible box
+                    // For others, just show the content
                     infoPanelContent.innerHTML = `
                             <h2>${panelData[panelKey].title}</h2>
                             ${panelData[panelKey].content}
                         `;
+
                     infoPanel.classList.add('visible');
                     infoPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // ─── Attach collapsible toggle events (only for innovation) ───
+                    if (isInnovation) {
+                        const toggle = document.getElementById('collapsibleToggle');
+                        const body = document.getElementById('collapsibleBody');
+                        const icon = document.getElementById('toggleIcon');
+
+                        if (toggle && body && icon) {
+                            // Remove any existing listeners to avoid duplicates
+                            const newToggle = toggle.cloneNode(true);
+                            toggle.parentNode.replaceChild(newToggle, toggle);
+
+                            // Re-fetch references
+                            const freshToggle = document.getElementById('collapsibleToggle');
+                            const freshBody = document.getElementById('collapsibleBody');
+                            const freshIcon = document.getElementById('toggleIcon');
+
+                            if (freshToggle && freshBody && freshIcon) {
+                                freshToggle.addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    const isOpen = freshBody.classList.toggle('open');
+                                    freshIcon.classList.toggle('open');
+                                    freshIcon.textContent = isOpen ? '▼' : '▶';
+                                });
+                            }
+                        }
+                    }
                 }
             }
 
-            // Close panel
+            // ─── Close panel ───
             closePanelBtn.addEventListener('click', function() {
                 infoPanel.classList.remove('visible');
             });
 
-            // Quick links click
+            // ─── Quick links click ───
             quickLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -1034,7 +1150,6 @@
                 const params = new URLSearchParams();
                 params.set('q', query);
 
-                // Map category to DuckDuckGo parameters
                 if (category === 'images') {
                     params.set('iax', 'images');
                     params.set('ia', 'images');
@@ -1048,7 +1163,6 @@
                     params.set('iax', 'maps');
                     params.set('ia', 'maps');
                 }
-                // 'web' = default search
 
                 return base + '?' + params.toString();
             }
@@ -1062,14 +1176,11 @@
                 const category = categorySelect.value;
                 const url = buildSearchUrl(query, category);
                 console.log('[Frigates] Navigating to:', url);
-                // Redirect in the same tab
                 window.location.href = url;
             }
 
-            // Search button
             searchBtn.addEventListener('click', doSearch);
 
-            // Enter key
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -1077,7 +1188,6 @@
                 }
             });
 
-            // I'm Feeling Lucky – picks a random query
             luckyBtn.addEventListener('click', function() {
                 const queries = [
                     'naval history', 'ocean exploration', 'world map',
@@ -1090,7 +1200,6 @@
                 doSearch();
             });
 
-            // Keyboard shortcut: '/' focuses search
             document.addEventListener('keydown', function(e) {
                 if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
                     const tag = document.activeElement ? document.activeElement.tagName : '';
@@ -1102,7 +1211,6 @@
                 }
             });
 
-            // Nav links – perform search for that section
             document.querySelectorAll('.nav-links a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -1114,12 +1222,10 @@
                 });
             });
 
-            // Avatar click
             document.querySelector('.avatar')?.addEventListener('click', () => {
                 alert('⚡ Your global command centre — coming soon!');
             });
 
-            // Voice button (demo)
             document.getElementById('voiceBtn')?.addEventListener('click', () => {
                 if ('webkitSpeechRecognition' in window) {
                     alert('🎤 Voice command ready! (demo)');
@@ -1128,7 +1234,7 @@
                 }
             });
 
-            console.log('⚓ Frigates Command Centre ready. Redirecting in same tab.');
+            console.log('⚓ Frigates Command Centre ready. Innovation has minimizable dropdown!');
         })();
     </script>
 </body>
