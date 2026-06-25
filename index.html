@@ -17,9 +17,12 @@
       background: #0a0e1a;
       color: #f0f4ff;
       height: 100vh;
-      overflow: hidden;
+      overflow: hidden; /* will be changed when results appear */
       display: flex;
       flex-direction: column;
+    }
+    body.show-results {
+      overflow-y: auto;
     }
 
     /* ── Canvas background ── */
@@ -41,9 +44,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* allow scrolling */
       padding: 2rem 1.5rem;
       pointer-events: none;
+      min-height: 100vh;
     }
     .app * {
       pointer-events: auto;
@@ -63,6 +67,7 @@
       background: rgba(10, 14, 26, 0.6);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      width: 100%;
     }
 
     .logo {
@@ -148,7 +153,8 @@
       text-align: center;
       max-width: 780px;
       width: 100%;
-      margin-top: -1rem;
+      margin-top: 4.5rem; /* push down below header */
+      margin-bottom: 2rem;
     }
 
     .hero h1 {
@@ -365,6 +371,61 @@
       margin: 0 1rem;
     }
 
+    /* ── Google CSE Results ── */
+    #cse-results {
+      width: 100%;
+      max-width: 780px;
+      margin: 1rem auto 3rem;
+      background: rgba(10, 14, 26, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: none; /* hidden until search */
+    }
+    #cse-results.gcse-results-visible {
+      display: block;
+    }
+
+    /* override Google's default dark text */
+    .gsc-control-cse {
+      background: transparent !important;
+      border: none !important;
+      font-family: inherit !important;
+    }
+    .gsc-control-cse .gsc-table-result,
+    .gsc-control-cse .gs-webResult .gs-title,
+    .gsc-control-cse .gs-webResult .gs-snippet,
+    .gsc-control-cse .gs-webResult .gs-visibleUrl {
+      color: #f0f4ff !important;
+    }
+    .gsc-control-cse .gsc-result-info {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+    .gsc-control-cse .gsc-search-button {
+      background: linear-gradient(135deg, #f472b6, #60a5fa) !important;
+      border: none !important;
+      border-radius: 40px !important;
+      padding: 0.5rem 1.5rem !important;
+      color: #0a0e1a !important;
+      font-weight: 600 !important;
+    }
+    .gsc-control-cse input.gsc-search-input {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 30px !important;
+      color: #f0f4ff !important;
+      padding: 0.6rem 1rem !important;
+    }
+    .gsc-control-cse input.gsc-search-input:focus {
+      border-color: #60a5fa !important;
+      outline: none !important;
+    }
+    /* hide Google's own search box (we have our own) */
+    .gsc-search-box {
+      display: none !important;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .header {
@@ -490,6 +551,10 @@
         font-size: 0.6rem;
         bottom: 0.8rem;
       }
+      #cse-results {
+        padding: 1rem;
+        margin: 0.5rem auto 2rem;
+      }
     }
   </style>
 </head>
@@ -525,7 +590,8 @@
       <h1>Explore the world</h1>
       <p class="sub">One query. Infinite horizons. Global reach.</p>
 
-      <form class="search-box" id="searchForm" action="#" role="search">
+      <!-- Our custom search box (triggers Google CSE) -->
+      <div class="search-box" id="customSearchBox">
         <select class="category-select" id="categorySelect" aria-label="Search category">
           <option value="web">All</option>
           <option value="images">Images</option>
@@ -548,14 +614,15 @@
           maxlength="2000"
         />
         <div class="actions">
-          <button class="action-btn" type="button" aria-label="Voice search" title="Voice search">
+          <button class="action-btn" type="button" aria-label="Voice search" title="Voice search" id="voiceBtn">
             <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 14.3V19h-2v2h6v-2h-2v-3.7A5 5 0 0 0 17 11V8h-2v3a3 3 0 0 1-6 0V8H7v3a5 5 0 0 0 4 4.3z"/></svg>
           </button>
-          <button type="submit" class="go-btn">Search</button>
+          <button type="button" class="go-btn" id="searchBtn">Search</button>
           <button type="button" class="lucky-btn" id="luckyBtn">✨ I'm feeling lucky</button>
         </div>
-      </form>
+      </div>
 
+      <!-- Quick links -->
       <div class="quick-links">
         <a href="#">Oceans</a>
         <a href="#">Naval</a>
@@ -566,6 +633,11 @@
       </div>
     </section>
 
+    <!-- Google CSE Results Container -->
+    <div id="cse-results">
+      <!-- Google CSE will render results here -->
+    </div>
+
     <div class="footer-stats">
       <span>⚓ 7 seas covered</span>
       <span>•</span>
@@ -575,12 +647,16 @@
     </div>
   </div>
 
-  <!-- ─── Scripts ─── -->
+  <!-- ─── Google CSE Script ─── -->
+  <!-- Replace YOUR_CSE_ID with your actual Programmable Search Engine ID -->
+  <script async src="https://cse.google.com/cse?cx=b21eef7876cd24cb4"></script>
+
+  <!-- ─── Our scripts ─── -->
   <script>
     (function() {
       'use strict';
 
-      // ─── Canvas Battle Scene ───
+      // ─── Canvas Battle Scene (same as before) ───
       const canvas = document.getElementById('battleCanvas');
       const ctx = canvas.getContext('2d');
       let W, H;
@@ -592,7 +668,7 @@
       window.addEventListener('resize', resize);
       resize();
 
-      // ── Ships ──
+      // Ships, missiles, stars, clouds - same as before
       class Ship {
         constructor(x, y, scale, speed, color) {
           this.x = x;
@@ -603,16 +679,11 @@
           this.waveOffset = Math.random() * Math.PI * 2;
           this.smokeParticles = [];
         }
-
         update(time) {
-          // Move ship slowly across
           this.x += this.speed * 0.5;
           if (this.x > W + 100) this.x = -100;
-          // Bob with waves
           this.waveOffset += 0.02;
           this.y += Math.sin(this.waveOffset) * 0.08;
-
-          // Update smoke
           this.smokeParticles.forEach(p => {
             p.x += p.vx;
             p.y += p.vy;
@@ -621,23 +692,15 @@
           });
           this.smokeParticles = this.smokeParticles.filter(p => p.life > 0);
         }
-
         draw(ctx) {
           const s = this.scale;
           const x = this.x;
           const y = this.y;
-
-          // ── Hull ──
           ctx.save();
-
-          // Hull shadow
           ctx.shadowColor = 'rgba(0,0,0,0.3)';
           ctx.shadowBlur = 20;
-
           const hx = x;
           const hy = y;
-
-          // Main hull
           ctx.beginPath();
           ctx.moveTo(hx - 70 * s, hy + 10 * s);
           ctx.quadraticCurveTo(hx - 80 * s, hy + 4 * s, hx - 75 * s, hy - 2 * s);
@@ -658,42 +721,28 @@
           ctx.strokeStyle = 'rgba(100,180,255,0.15)';
           ctx.lineWidth = 1;
           ctx.stroke();
-
-          // Hull waterline
           ctx.beginPath();
           ctx.moveTo(hx - 68 * s, hy + 6 * s);
           ctx.lineTo(hx + 68 * s, hy + 6 * s);
           ctx.strokeStyle = 'rgba(200,50,50,0.3)';
           ctx.lineWidth = 1.5;
           ctx.stroke();
-
-          // ── Deck details ──
           ctx.shadowBlur = 0;
-
-          // Main deck
           ctx.fillStyle = 'rgba(40,55,70,0.6)';
           ctx.fillRect(hx - 55 * s, hy - 10 * s, 95 * s, 4 * s);
-
-          // Superstructure
           ctx.fillStyle = 'rgba(50,65,80,0.8)';
           ctx.fillRect(hx - 20 * s, hy - 22 * s, 40 * s, 12 * s);
           ctx.fillRect(hx - 10 * s, hy - 30 * s, 20 * s, 8 * s);
-
-          // Bridge windows
           ctx.fillStyle = 'rgba(100,200,255,0.25)';
           for (let i = 0; i < 4; i++) {
             ctx.fillRect(hx - 14 * s + i * 8 * s, hy - 20 * s, 4 * s, 4 * s);
           }
-
-          // ── Mast ──
           ctx.strokeStyle = 'rgba(180,200,220,0.5)';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.moveTo(hx + 10 * s, hy - 30 * s);
           ctx.lineTo(hx + 10 * s, hy - 60 * s);
           ctx.stroke();
-
-          // Radar dish
           ctx.beginPath();
           ctx.arc(hx + 10 * s, hy - 60 * s, 6 * s, 0, Math.PI * 2);
           ctx.strokeStyle = 'rgba(100,200,255,0.2)';
@@ -703,8 +752,6 @@
           ctx.arc(hx + 10 * s, hy - 60 * s, 3 * s, 0, Math.PI * 2);
           ctx.fillStyle = 'rgba(100,200,255,0.15)';
           ctx.fill();
-
-          // Radar arm
           ctx.strokeStyle = 'rgba(200,100,50,0.5)';
           ctx.lineWidth = 1.5;
           const angle = Date.now() / 2000;
@@ -712,25 +759,18 @@
           ctx.moveTo(hx + 10 * s, hy - 60 * s);
           ctx.lineTo(hx + 10 * s + 8 * s * Math.cos(angle), hy - 60 * s + 8 * s * Math.sin(angle));
           ctx.stroke();
-
-          // ── Gun turrets ──
           ctx.fillStyle = 'rgba(60,75,90,0.8)';
           ctx.shadowBlur = 8;
           ctx.shadowColor = 'rgba(0,0,0,0.4)';
-          // Forward turret
           ctx.beginPath();
           ctx.arc(hx - 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
           ctx.fill();
-          // Aft turret
           ctx.beginPath();
           ctx.arc(hx + 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
           ctx.fill();
-          // Mid turret
           ctx.beginPath();
           ctx.arc(hx - 5 * s, hy - 6 * s, 5 * s, 0, Math.PI * 2);
           ctx.fill();
-
-          // Gun barrels
           ctx.shadowBlur = 0;
           ctx.strokeStyle = 'rgba(80,100,120,0.6)';
           ctx.lineWidth = 2;
@@ -740,16 +780,12 @@
             ctx.lineTo(hx + gx + 10 * s * (gx > 0 ? 1 : -1), hy - 10 * s);
             ctx.stroke();
           }
-
-          // ── Smoke from stack ──
           const stackX = hx + 5 * s;
           const stackY = hy - 28 * s;
           ctx.fillStyle = 'rgba(100,120,140,0.15)';
           ctx.beginPath();
           ctx.arc(stackX, stackY, 4 * s, 0, Math.PI * 2);
           ctx.fill();
-
-          // Generate smoke particles
           if (Math.random() < 0.4) {
             this.smokeParticles.push({
               x: stackX + (Math.random() - 0.5) * 4 * s,
@@ -760,16 +796,12 @@
               size: 3 * s + Math.random() * 4 * s
             });
           }
-
-          // Draw smoke
           this.smokeParticles.forEach(p => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(180,200,220,${p.life * 0.15})`;
             ctx.fill();
           });
-
-          // ── Running lights ──
           const blink = Math.sin(Date.now() / 800) > 0.5;
           if (blink) {
             ctx.fillStyle = 'rgba(255,50,50,0.6)';
@@ -784,13 +816,11 @@
             ctx.arc(hx + 70 * s, hy + 2 * s, 2 * s, 0, Math.PI * 2);
             ctx.fill();
           }
-
           ctx.shadowBlur = 0;
           ctx.restore();
         }
       }
 
-      // ── Missile ──
       class Missile {
         constructor(x, y, targetX, targetY) {
           this.x = x;
@@ -803,50 +833,33 @@
           this.age = 0;
           this.angle = 0;
         }
-
         update() {
           this.age++;
           const dx = this.targetX - this.x;
           const dy = this.targetY - this.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 20) {
-            this.alive = false;
-            return;
-          }
-
-          // Smooth homing
+          if (dist < 20) { this.alive = false; return; }
           const angle = Math.atan2(dy, dx);
           this.x += Math.cos(angle) * this.speed;
           this.y += Math.sin(angle) * this.speed;
           this.angle = angle;
-
-          // Trail
           this.trail.push({ x: this.x, y: this.y, life: 1 });
           if (this.trail.length > 40) this.trail.shift();
           this.trail.forEach(p => p.life -= 0.02);
           this.trail = this.trail.filter(p => p.life > 0);
-
-          // Slight wobble
           this.x += (Math.random() - 0.5) * 0.3;
           this.y += (Math.random() - 0.5) * 0.3;
         }
-
         draw(ctx) {
-          // Trail
           this.trail.forEach((p, i) => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, 2 * (p.life * 0.8 + 0.2), 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255,150,50,${p.life * 0.5})`;
             ctx.fill();
           });
-
-          // Missile body
           ctx.save();
           ctx.translate(this.x, this.y);
           ctx.rotate(this.angle);
-
-          // Glow
           const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
           grad.addColorStop(0, 'rgba(255,200,100,0.15)');
           grad.addColorStop(1, 'rgba(255,200,100,0)');
@@ -854,59 +867,44 @@
           ctx.beginPath();
           ctx.arc(0, 0, 20, 0, Math.PI * 2);
           ctx.fill();
-
-          // Body
           ctx.shadowBlur = 20;
           ctx.shadowColor = 'rgba(255,150,50,0.4)';
           ctx.fillStyle = '#ff8833';
           ctx.beginPath();
           ctx.ellipse(0, 0, 6, 2, 0, 0, Math.PI * 2);
           ctx.fill();
-
-          // Nose
           ctx.fillStyle = '#ffcc66';
           ctx.beginPath();
           ctx.ellipse(6, 0, 3, 1.5, 0, 0, Math.PI * 2);
           ctx.fill();
-
-          // Fins
           ctx.fillStyle = 'rgba(200,150,100,0.6)';
           ctx.fillRect(-4, -3, 2, 1);
           ctx.fillRect(-4, 2, 2, 1);
-
-          // Engine glow
           ctx.shadowBlur = 30;
           ctx.shadowColor = 'rgba(255,100,50,0.6)';
           ctx.fillStyle = 'rgba(255,200,100,0.8)';
           ctx.beginPath();
           ctx.arc(-6, 0, 3, 0, Math.PI * 2);
           ctx.fill();
-
           ctx.shadowBlur = 0;
           ctx.restore();
         }
-
         isAlive() { return this.alive; }
       }
 
-      // ── Scene state ──
       let ships = [];
       let missiles = [];
       let stars = [];
       let clouds = [];
       let time = 0;
 
-      // ── Initialize ──
       function initScene() {
-        // Ships
         ships = [
           new Ship(100, H * 0.78, 1.2, 0.25, '#3a5a7a'),
           new Ship(450, H * 0.82, 0.9, 0.18, '#4a6a5a'),
           new Ship(750, H * 0.76, 1.0, 0.22, '#5a4a6a'),
           new Ship(1100, H * 0.80, 0.8, 0.15, '#3a5a6a'),
         ];
-
-        // Stars
         stars = [];
         for (let i = 0; i < 120; i++) {
           stars.push({
@@ -916,8 +914,6 @@
             twinkle: Math.random() * Math.PI * 2
           });
         }
-
-        // Clouds
         clouds = [];
         for (let i = 0; i < 8; i++) {
           clouds.push({
@@ -929,8 +925,6 @@
             opacity: 0.05 + Math.random() * 0.1
           });
         }
-
-        // Initial missiles
         launchMissile(ships[0], ships[1]);
         setTimeout(() => launchMissile(ships[2], ships[0]), 2000);
         setTimeout(() => launchMissile(ships[1], ships[3]), 4000);
@@ -945,7 +939,6 @@
         missiles.push(new Missile(mx, my, tx, ty));
       }
 
-      // Auto-launch missiles periodically
       setInterval(() => {
         if (ships.length >= 2) {
           const idx1 = Math.floor(Math.random() * ships.length);
@@ -957,9 +950,7 @@
         }
       }, 3500);
 
-      // ── Draw sea ──
       function drawSea() {
-        // Water gradient
         const grad = ctx.createLinearGradient(0, H * 0.6, 0, H);
         grad.addColorStop(0, 'rgba(10,20,45,0.9)');
         grad.addColorStop(0.3, 'rgba(5,15,35,0.95)');
@@ -967,8 +958,6 @@
         grad.addColorStop(1, 'rgba(0,3,15,1)');
         ctx.fillStyle = grad;
         ctx.fillRect(0, H * 0.6, W, H * 0.4);
-
-        // Waves
         ctx.beginPath();
         const waveY = H * 0.6;
         for (let x = 0; x <= W; x += 2) {
@@ -982,8 +971,6 @@
         ctx.strokeStyle = 'rgba(60,120,200,0.12)';
         ctx.lineWidth = 2;
         ctx.stroke();
-
-        // Second wave layer (closer)
         ctx.beginPath();
         for (let x = 0; x <= W; x += 2) {
           const wave1 = Math.sin(x * 0.02 + time * 0.001 + 0.8) * 6;
@@ -995,8 +982,6 @@
         ctx.strokeStyle = 'rgba(80,160,255,0.06)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
-
-        // Foam highlights
         for (let i = 0; i < 15; i++) {
           const fx = (Math.sin(i * 1.7 + time * 0.0005) * 0.5 + 0.5) * W;
           const fy = H * 0.6 + 8 + Math.sin(i * 2.3 + time * 0.001) * 8;
@@ -1005,8 +990,6 @@
           ctx.fillStyle = `rgba(150,220,255,${0.04 + Math.sin(time * 0.001 + i) * 0.02 + 0.02})`;
           ctx.fill();
         }
-
-        // Horizon glow
         const glow = ctx.createRadialGradient(W / 2, H * 0.58, 0, W / 2, H * 0.58, 200);
         glow.addColorStop(0, 'rgba(255,200,150,0.06)');
         glow.addColorStop(0.5, 'rgba(255,150,100,0.03)');
@@ -1015,7 +998,6 @@
         ctx.fillRect(0, H * 0.4, W, H * 0.3);
       }
 
-      // ── Draw sky ──
       function drawSky() {
         const grad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
         grad.addColorStop(0, '#050810');
@@ -1025,8 +1007,6 @@
         grad.addColorStop(1, '#1a2a45');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H * 0.6);
-
-        // Stars
         stars.forEach(s => {
           const brightness = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(time * 0.002 + s.twinkle));
           ctx.beginPath();
@@ -1034,8 +1014,6 @@
           ctx.fillStyle = `rgba(255,255,255,${brightness * 0.6})`;
           ctx.fill();
         });
-
-        // Clouds
         clouds.forEach(c => {
           c.x += c.speed;
           if (c.x > W + c.w) c.x = -c.w;
@@ -1050,8 +1028,6 @@
           ctx.ellipse(c.x + c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.3, 0, 0, Math.PI * 2);
           ctx.fill();
         });
-
-        // Distant explosions (flashes)
         if (Math.random() < 0.003) {
           const fx = Math.random() * W;
           const fy = H * 0.2 + Math.random() * H * 0.2;
@@ -1066,28 +1042,14 @@
         }
       }
 
-      // ── Animation loop ──
       function animate() {
         time++;
         ctx.clearRect(0, 0, W, H);
-
         drawSky();
         drawSea();
-
-        // Update and draw ships
-        ships.forEach(ship => {
-          ship.update(time);
-          ship.draw(ctx);
-        });
-
-        // Update and draw missiles
-        missiles.forEach(m => {
-          m.update();
-          m.draw(ctx);
-        });
+        ships.forEach(ship => { ship.update(time); ship.draw(ctx); });
+        missiles.forEach(m => { m.update(); m.draw(ctx); });
         missiles = missiles.filter(m => m.isAlive());
-
-        // Missile launch flash (random)
         if (Math.random() < 0.002) {
           const ship = ships[Math.floor(Math.random() * ships.length)];
           if (ship) {
@@ -1103,42 +1065,79 @@
             ctx.fill();
           }
         }
-
         requestAnimationFrame(animate);
       }
 
-      // ── Search form handling ──
-      const form = document.getElementById('searchForm');
+      // ─── Google CSE Integration ───
+
+      // The search input and buttons
       const input = document.getElementById('searchInput');
-      const category = document.getElementById('categorySelect');
+      const searchBtn = document.getElementById('searchBtn');
       const luckyBtn = document.getElementById('luckyBtn');
+      const categorySelect = document.getElementById('categorySelect');
+      const resultsContainer = document.getElementById('cse-results');
 
-      function getSearchUrl(query, cat) {
-        let base = 'https://duckduckgo.com/';
-        let params = new URLSearchParams();
-        params.set('q', query);
-        if (cat === 'images') params.set('iax', 'images');
-        else if (cat === 'videos') params.set('iax', 'videos');
-        else if (cat === 'news') params.set('iax', 'news');
-        else if (cat === 'maps') params.set('iax', 'maps');
-        return base + '?' + params.toString();
-      }
-
-      function performSearch(query, cat) {
+      // Function to perform search using Google CSE
+      function performSearch(query) {
         if (!query.trim()) {
           input.focus();
           return;
         }
-        const url = getSearchUrl(query, cat);
-        console.log('[Frigates] Searching:', url);
-        window.location.href = url;
+        // Show results container
+        resultsContainer.style.display = 'block';
+        resultsContainer.classList.add('gcse-results-visible');
+        document.body.classList.add('show-results');
+
+        // Use Google's CSE API to render results
+        // The google.search.cse.element.render function is available after the CSE script loads
+        if (window.google && google.search && google.search.cse && google.search.cse.element) {
+          // We'll use the existing element with id "cse-results"
+          // First, clear any previous results
+          resultsContainer.innerHTML = '';
+          // Create a new div for results (Google expects a specific structure)
+          const resultsDiv = document.createElement('div');
+          resultsDiv.className = 'gcse-searchresults';
+          resultsContainer.appendChild(resultsDiv);
+
+          // Render the search results
+          google.search.cse.element.render({
+            div: resultsDiv.id || 'gcse-searchresults',
+            tag: 'searchresults-only',
+            attributes: {
+              linkTarget: '_blank'
+            }
+          });
+
+          // Now execute the query
+          const element = google.search.cse.element.getElement('gcse-searchresults');
+          if (element) {
+            element.execute(query);
+          } else {
+            // Fallback: use the global search function
+            google.search.cse.element.getResults(query);
+          }
+        } else {
+          // Fallback: if Google CSE not loaded, redirect to Google search
+          window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+        }
       }
 
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        performSearch(input.value, category.value);
+      // ── Event listeners ──
+
+      // Search button
+      searchBtn.addEventListener('click', function() {
+        performSearch(input.value);
       });
 
+      // Enter key in input
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          performSearch(input.value);
+        }
+      });
+
+      // I'm Feeling Lucky
       luckyBtn.addEventListener('click', function() {
         const queries = [
           'naval history', 'ocean exploration', 'world map',
@@ -1148,9 +1147,10 @@
         ];
         const randomQuery = queries[Math.floor(Math.random() * queries.length)];
         input.value = randomQuery;
-        performSearch(randomQuery, category.value);
+        performSearch(randomQuery);
       });
 
+      // Keyboard shortcut '/'
       document.addEventListener('keydown', function(e) {
         if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
           const tag = document.activeElement ? document.activeElement.tagName : '';
@@ -1162,11 +1162,13 @@
         }
       });
 
+      // Avatar click
       document.querySelector('.avatar')?.addEventListener('click', () => {
         alert('⚓ Your naval command center — coming soon!');
       });
 
-      document.querySelector('.action-btn')?.addEventListener('click', () => {
+      // Voice button (demo)
+      document.getElementById('voiceBtn')?.addEventListener('click', () => {
         if ('webkitSpeechRecognition' in window) {
           alert('🎤 Voice command ready! (demo)');
         } else {
@@ -1174,11 +1176,10 @@
         }
       });
 
-      // ── Start everything ──
+      // ── Start the battle scene ──
       initScene();
       animate();
 
-      // Handle resize for ships positions
       window.addEventListener('resize', () => {
         resize();
         ships.forEach((ship, i) => {
@@ -1187,7 +1188,7 @@
         });
       });
 
-      console.log('⚓ Frigates ready — explore the world!');
+      console.log('⚓ Frigates with Google CSE ready — explore the world!');
     })();
   </script>
 </body>
