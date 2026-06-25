@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Frigates · Global Intelligence</title>
+    <title>Frigates · Global Command Centre</title>
     <style>
         /* ── Reset & base ── */
         * {
@@ -54,7 +54,7 @@
             pointer-events: auto;
         }
 
-        /* ── Header ── */
+        /* ── Header (Command Centre) ── */
         .header {
             position: fixed;
             top: 0;
@@ -63,19 +63,44 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2.5rem;
+            padding: 0.8rem 2.5rem;
             z-index: 10;
-            background: rgba(5, 8, 15, 0.6);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(5, 8, 15, 0.7);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(96, 165, 250, 0.15);
             width: 100%;
+        }
+
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .header .status .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 10px #34d399;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.4; transform: scale(0.8); }
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
@@ -87,22 +112,23 @@
         .logo .ship-icon {
             -webkit-text-fill-color: initial;
             color: rgba(255, 255, 255, 0.7);
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             background: none;
         }
         .logo span {
             font-weight: 300;
             -webkit-text-fill-color: rgba(255, 255, 255, 0.4);
             background: none;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             letter-spacing: 0.5px;
+            margin-left: 0.2rem;
         }
 
         .nav-links {
             display: flex;
             gap: 2rem;
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
         }
         .nav-links a {
             color: inherit;
@@ -111,6 +137,9 @@
             padding-bottom: 2px;
             border-bottom: 1px solid transparent;
             cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.05em;
         }
         .nav-links a:hover {
             color: #fff;
@@ -123,8 +152,8 @@
             gap: 1.2rem;
         }
         .user-area .lang {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
             cursor: pointer;
             transition: color 0.2s;
         }
@@ -132,14 +161,14 @@
             color: #fff;
         }
         .user-area .avatar {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             background: linear-gradient(135deg, #60a5fa, #a78bfa);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #05080f;
             font-weight: 600;
             cursor: pointer;
@@ -155,7 +184,7 @@
             text-align: center;
             max-width: 780px;
             width: 100%;
-            margin-top: 4.5rem;
+            margin-top: 5.5rem;
             margin-bottom: 2rem;
         }
 
@@ -353,13 +382,16 @@
             border-bottom: 1px solid transparent;
             padding-bottom: 2px;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
         }
         .quick-links a:hover {
             color: rgba(255, 255, 255, 0.7);
             border-bottom-color: rgba(96, 165, 250, 0.4);
         }
 
-        /* ── Info panel with close button ── */
+        /* ── Info panel ── */
         .info-panel {
             display: none;
             width: 100%;
@@ -418,6 +450,43 @@
             color: #60a5fa;
             font-weight: 500;
         }
+
+        /* ── Innovation Panel Creative Styles ── */
+        .info-panel.innovation-panel {
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            box-shadow: 0 0 40px rgba(96, 165, 250, 0.05);
+        }
+        .info-panel .manifesto {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .info-panel .manifesto-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            border-left: 2px solid #60a5fa;
+        }
+        .info-panel .manifesto-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .info-panel .manifesto-item .value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #e0e8f0;
+            margin-top: 0.2rem;
+        }
+        .info-panel .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.3), transparent);
+            margin: 1.5rem 0;
+        }
+
         .info-panel .whatsapp-btn {
             display: inline-block;
             background: #25D366;
@@ -442,82 +511,6 @@
             fill: currentColor;
         }
 
-        /* ── Google CSE Results ── */
-        #cse-results {
-            width: 100%;
-            max-width: 780px;
-            margin: 1rem auto 3rem;
-            background: rgba(5, 8, 15, 0.7);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            display: none;
-            min-height: 60px;
-        }
-        #cse-results.gcse-results-visible {
-            display: block;
-        }
-
-        .gsc-control-cse {
-            background: transparent !important;
-            border: none !important;
-            font-family: inherit !important;
-        }
-        .gsc-control-cse .gsc-table-result,
-        .gsc-control-cse .gs-webResult .gs-title,
-        .gsc-control-cse .gs-webResult .gs-snippet,
-        .gsc-control-cse .gs-webResult .gs-visibleUrl {
-            color: #f0f4ff !important;
-        }
-        .gsc-control-cse .gsc-result-info {
-            color: rgba(255, 255, 255, 0.6) !important;
-        }
-        .gsc-control-cse .gsc-search-button {
-            background: linear-gradient(135deg, #60a5fa, #a78bfa) !important;
-            border: none !important;
-            border-radius: 40px !important;
-            padding: 0.5rem 1.5rem !important;
-            color: #05080f !important;
-            font-weight: 600 !important;
-        }
-        .gsc-control-cse input.gsc-search-input {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 30px !important;
-            color: #f0f4ff !important;
-            padding: 0.6rem 1rem !important;
-        }
-        .gsc-control-cse input.gsc-search-input:focus {
-            border-color: #60a5fa !important;
-            outline: none !important;
-        }
-        .gsc-search-box {
-            display: none !important;
-        }
-
-        /* ── Loading placeholder ── */
-        .cse-loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.95rem;
-            padding: 1.5rem;
-        }
-        .cse-loading .spinner {
-            width: 24px;
-            height: 24px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #60a5fa;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         /* ── Footer stats ── */
         .footer-stats {
             position: fixed;
@@ -537,7 +530,8 @@
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .header { padding: 0.8rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
-            .nav-links { gap: 1rem; font-size: 0.85rem; }
+            .header .status { font-size: 0.6rem; }
+            .nav-links { gap: 1rem; font-size: 0.75rem; }
             .hero h1 { font-size: 2.6rem; }
             .hero .sub { font-size: 1rem; margin-bottom: 1.8rem; }
             .search-box { flex-wrap: nowrap; border-radius: 40px; padding: 0.1rem 0.1rem 0.1rem 0; }
@@ -550,10 +544,12 @@
             .info-panel { padding: 1.5rem; }
             .info-panel h2 { font-size: 1.5rem; }
             .info-panel .close-panel { font-size: 1.5rem; top: 0.8rem; right: 1rem; }
+            .info-panel .manifesto { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
             .header { padding: 0.6rem 1rem; }
+            .header .status { display: none; }
             .logo { font-size: 1.4rem; }
             .logo .ship-icon { font-size: 1.2rem; }
             .nav-links { display: none; }
@@ -569,7 +565,6 @@
             .search-box .action-btn svg { width: 16px; height: 16px; }
             .quick-links { gap: 0.8rem 1.2rem; font-size: 0.75rem; margin-top: 1.8rem; }
             .footer-stats { font-size: 0.6rem; bottom: 0.8rem; }
-            #cse-results { padding: 1rem; margin: 0.5rem auto 2rem; }
             .info-panel { padding: 1rem; }
             .info-panel h2 { font-size: 1.2rem; }
             .info-panel .close-panel { font-size: 1.3rem; top: 0.5rem; right: 0.8rem; }
@@ -584,11 +579,15 @@
     <!-- ─── App ─── -->
     <div class="app">
 
-        <!-- Header -->
+        <!-- Header (Global Command Centre) -->
         <header class="header">
+            <div class="status">
+                <span class="dot"></span>
+                <span>All systems online · secure link established</span>
+            </div>
             <div class="logo">
                 <span class="ship-icon">⚓</span> Frigates
-                <span>global intelligence</span>
+                <span>command centre</span>
             </div>
             <nav class="nav-links">
                 <a href="#" data-section="images">Images</a>
@@ -656,11 +655,6 @@
             <div id="infoPanelContent"></div>
         </div>
 
-        <!-- Google CSE Results -->
-        <div id="cse-results">
-            <div id="gcse-results-div" class="gcse-searchresults-only"></div>
-        </div>
-
         <div class="footer-stats">
             <span>⚓ 7 seas covered</span>
             <span>•</span>
@@ -672,10 +666,6 @@
 
     <!-- ─── Three.js Library ─── -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
-    </script>
-
-    <!-- ─── Google CSE Script ─── -->
-    <script async src="https://cse.google.com/cse?cx=b21eef7876cd24cb4">
     </script>
 
     <!-- ─── Main Script ─── -->
@@ -905,7 +895,7 @@
             }
             animate();
 
-            // ─── Quick Links / Info Panels with Close Button ───
+            // ─── Quick Links / Info Panels ───
             const infoPanel = document.getElementById('infoPanel');
             const infoPanelContent = document.getElementById('infoPanelContent');
             const closePanelBtn = document.getElementById('closeInfoPanel');
@@ -948,17 +938,50 @@
                         `
                 },
                 innovation: {
-                    title: '💡 Innovation',
+                    title: '💡 Innovation · Tech Manifesto',
                     content: `
-                            <p>Innovation is the engine of progress. It transforms ideas into solutions that improve lives and shape the future.</p>
-                            <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; border-left: 3px solid #60a5fa;">
-                                <h3 style="color: #60a5fa; font-weight: 600; margin-bottom: 0.5rem;">Meet the Developer</h3>
-                                <p style="margin-bottom: 0.5rem;">
-                                    <strong>John Karanja</strong> – a passionate <span class="highlight">IT engineer</span> from Kenya, on a mission to build technology that connects and empowers communities across Africa. With a deep interest in web development, AI, and scalable systems, John is dedicated to solving real-world problems through elegant code and innovative thinking.
+                            <p style="font-size: 1.1rem; font-weight: 300; color: #a0b0c0; margin-bottom: 1.5rem;">
+                                Innovation is the engine of progress. It transforms ideas into solutions that improve lives and shape the future.
+                            </p>
+                            <div style="background: rgba(255,255,255,0.02); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(96, 165, 250, 0.1); margin-bottom: 1.5rem;">
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #60a5fa, #a78bfa); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #05080f; font-weight: 700; flex-shrink: 0;">JK</div>
+                                    <div>
+                                        <h3 style="color: #fff; font-size: 1.4rem; font-weight: 600; margin-bottom: 0.1rem;">John Karanja</h3>
+                                        <p style="color: #60a5fa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">IT Engineer · Tech Visionary</p>
+                                    </div>
+                                </div>
+                                <p style="margin-bottom: 1rem; color: #d0d8e8;">
+                                    <span class="highlight">Mission-driven engineer</span> from Kenya, building technology that connects and empowers communities across Africa. Specializing in web development, AI, and scalable systems, John is dedicated to solving real-world problems through elegant code and innovative thinking.
                                 </p>
-                                <p style="margin-bottom: 0.5rem;">
-                                    He believes that technology should be accessible, inclusive, and impactful. Currently exploring the intersection of maritime operations and digital innovation, John is excited to contribute to the global tech ecosystem.
-                                </p>
+                            </div>
+
+                            <div class="manifesto">
+                                <div class="manifesto-item">
+                                    <div class="label">🚀 Mission</div>
+                                    <div class="value">Build tech that connects & empowers African communities</div>
+                                </div>
+                                <div class="manifesto-item">
+                                    <div class="label">💡 Expertise</div>
+                                    <div class="value">Web Dev · AI · Scalable Systems</div>
+                                </div>
+                                <div class="manifesto-item">
+                                    <div class="label">🌍 Vision</div>
+                                    <div class="value">Accessible, inclusive, impactful technology for all</div>
+                                </div>
+                                <div class="manifesto-item">
+                                    <div class="label">⚡ Current Focus</div>
+                                    <div class="value">Maritime operations × Digital innovation</div>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <p style="color: #a0b0c0; text-align: center; font-style: italic; margin-bottom: 1rem;">
+                                "Technology should be a bridge, not a barrier. Let's build the future, together."
+                            </p>
+
+                            <div style="text-align: center;">
                                 <a href="https://wa.me/254717616895" target="_blank" class="whatsapp-btn" rel="noopener noreferrer">
                                     <svg width="20" height="20" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                                     Connect on WhatsApp
@@ -968,117 +991,93 @@
                 }
             };
 
-            // Close panel function
-            function closeInfoPanel() {
-                infoPanel.classList.remove('visible');
+            // Function to show panel
+            function showPanel(panelKey) {
+                if (panelKey && panelData[panelKey]) {
+                    const isInnovation = panelKey === 'innovation';
+                    if (isInnovation) {
+                        infoPanel.classList.add('innovation-panel');
+                    } else {
+                        infoPanel.classList.remove('innovation-panel');
+                    }
+                    infoPanelContent.innerHTML = `
+                            <h2>${panelData[panelKey].title}</h2>
+                            ${panelData[panelKey].content}
+                        `;
+                    infoPanel.classList.add('visible');
+                    infoPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
 
-            // Close button event
-            closePanelBtn.addEventListener('click', closeInfoPanel);
+            // Close panel
+            closePanelBtn.addEventListener('click', function() {
+                infoPanel.classList.remove('visible');
+            });
 
-            // Click outside to close (optional – click on the close button is enough)
             // Quick links click
             quickLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const panel = this.dataset.panel;
-                    if (panel && panelData[panel]) {
-                        infoPanelContent.innerHTML = `
-                                <h2>${panelData[panel].title}</h2>
-                                ${panelData[panel].content}
-                            `;
-                        infoPanel.classList.add('visible');
-                        infoPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                    showPanel(panel);
                 });
             });
 
-            // ─── Google CSE Integration ───
+            // ─── Search: DuckDuckGo (Same Tab Redirect) ───
             const input = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
             const luckyBtn = document.getElementById('luckyBtn');
-            const resultsContainer = document.getElementById('cse-results');
-            const resultsDivId = 'gcse-results-div';
+            const categorySelect = document.getElementById('categorySelect');
 
-            let cseReady = false;
-            let cseElement = null;
-            let pendingQuery = null;
+            function buildSearchUrl(query, category) {
+                const base = 'https://duckduckgo.com/';
+                const params = new URLSearchParams();
+                params.set('q', query);
 
-            function initCSE() {
-                if (window.google && google.search && google.search.cse && google.search.cse.element) {
-                    cseReady = true;
-                    google.search.cse.element.render({
-                        div: resultsDivId,
-                        tag: 'searchresults-only',
-                        attributes: { linkTarget: '_blank' }
-                    });
-                    cseElement = google.search.cse.element.getElement(resultsDivId);
-                    console.log('[Frigates] Google CSE ready');
-                    if (pendingQuery) {
-                        executeSearch(pendingQuery);
-                        pendingQuery = null;
-                    }
-                    return true;
+                // Map category to DuckDuckGo parameters
+                if (category === 'images') {
+                    params.set('iax', 'images');
+                    params.set('ia', 'images');
+                } else if (category === 'videos') {
+                    params.set('iax', 'videos');
+                    params.set('ia', 'videos');
+                } else if (category === 'news') {
+                    params.set('iax', 'news');
+                    params.set('ia', 'news');
+                } else if (category === 'maps') {
+                    params.set('iax', 'maps');
+                    params.set('ia', 'maps');
                 }
-                if (!window._cseRetries) window._cseRetries = 0;
-                if (window._cseRetries < 20) {
-                    window._cseRetries++;
-                    setTimeout(initCSE, 500);
-                } else {
-                    console.warn('CSE failed to load after retries.');
-                }
-                return false;
+                // 'web' = default search
+
+                return base + '?' + params.toString();
             }
 
-            function executeSearch(query) {
-                if (cseReady && cseElement) {
-                    cseElement.execute(query);
-                    resultsContainer.style.display = 'block';
-                    resultsContainer.classList.add('gcse-results-visible');
-                    document.body.classList.add('show-results');
-                    const loading = document.querySelector('.cse-loading');
-                    if (loading) loading.remove();
-                } else {
-                    pendingQuery = query;
-                    resultsContainer.style.display = 'block';
-                    resultsContainer.classList.add('gcse-results-visible');
-                    document.body.classList.add('show-results');
-                    let loading = document.querySelector('.cse-loading');
-                    if (!loading) {
-                        loading = document.createElement('div');
-                        loading.className = 'cse-loading';
-                        loading.innerHTML = `
-                                <div class="spinner"></div>
-                                <span>Accessing global data...</span>
-                            `;
-                        resultsContainer.prepend(loading);
-                    }
-                    if (!cseReady) initCSE();
-                }
-            }
-
-            function performSearch(query) {
-                if (!query.trim()) {
+            function doSearch() {
+                const query = input.value.trim();
+                if (!query) {
                     input.focus();
                     return;
                 }
-                const resultsDiv = document.getElementById(resultsDivId);
-                if (resultsDiv) resultsDiv.innerHTML = '';
-                const loading = document.querySelector('.cse-loading');
-                if (loading) loading.remove();
-                executeSearch(query);
+                const category = categorySelect.value;
+                const url = buildSearchUrl(query, category);
+                console.log('[Frigates] Navigating to:', url);
+                // Redirect in the same tab
+                window.location.href = url;
             }
 
-            // ── Event listeners ──
-            searchBtn.addEventListener('click', function() { performSearch(input.value); });
+            // Search button
+            searchBtn.addEventListener('click', doSearch);
 
+            // Enter key
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    performSearch(input.value);
+                    doSearch();
                 }
             });
 
+            // I'm Feeling Lucky – picks a random query
             luckyBtn.addEventListener('click', function() {
                 const queries = [
                     'naval history', 'ocean exploration', 'world map',
@@ -1088,9 +1087,10 @@
                 ];
                 const randomQuery = queries[Math.floor(Math.random() * queries.length)];
                 input.value = randomQuery;
-                performSearch(randomQuery);
+                doSearch();
             });
 
+            // Keyboard shortcut: '/' focuses search
             document.addEventListener('keydown', function(e) {
                 if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
                     const tag = document.activeElement ? document.activeElement.tagName : '';
@@ -1102,21 +1102,24 @@
                 }
             });
 
+            // Nav links – perform search for that section
             document.querySelectorAll('.nav-links a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.dataset.section;
                     if (section) {
                         input.value = section;
-                        performSearch(section);
+                        doSearch();
                     }
                 });
             });
 
+            // Avatar click
             document.querySelector('.avatar')?.addEventListener('click', () => {
-                alert('⚡ Your global command center — coming soon!');
+                alert('⚡ Your global command centre — coming soon!');
             });
 
+            // Voice button (demo)
             document.getElementById('voiceBtn')?.addEventListener('click', () => {
                 if ('webkitSpeechRecognition' in window) {
                     alert('🎤 Voice command ready! (demo)');
@@ -1125,12 +1128,7 @@
                 }
             });
 
-            // ── Start CSE initialisation ──
-            window.addEventListener('load', function() {
-                setTimeout(initCSE, 800);
-            });
-
-            console.log('⚓ Frigates ready with next-gen 3D visualization!');
+            console.log('⚓ Frigates Command Centre ready. Redirecting in same tab.');
         })();
     </script>
 </body>
