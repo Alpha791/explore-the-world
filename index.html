@@ -358,7 +358,7 @@
             border-bottom-color: rgba(96, 165, 250, 0.4);
         }
 
-        /* ── Info panels (for quick links) ── */
+        /* ── Info panels ── */
         .info-panel {
             display: none;
             width: 100%;
@@ -489,6 +489,196 @@
             margin: 0 1rem;
         }
 
+        /* ── DeepSeek Chat Widget ── */
+        .chat-toggle {
+            position: fixed;
+            bottom: 5rem;
+            right: 2rem;
+            z-index: 1000;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+            color: #0a0e1a;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(96, 165, 250, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 32px rgba(96, 165, 250, 0.6);
+        }
+        .chat-toggle .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #f472b6;
+            color: #0a0e1a;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-panel {
+            position: fixed;
+            bottom: 7rem;
+            right: 2rem;
+            z-index: 999;
+            width: 380px;
+            max-width: 90vw;
+            max-height: 70vh;
+            background: rgba(10, 14, 26, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: opacity 0.3s ease;
+        }
+        .chat-panel.open {
+            display: flex;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .chat-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .chat-header .close-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .chat-header .close-btn:hover {
+            color: #fff;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            overflow-y: auto;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .chat-messages .msg {
+            padding: 0.6rem 1rem;
+            border-radius: 16px;
+            max-width: 85%;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .chat-messages .msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #f472b6, #60a5fa);
+            color: #0a0e1a;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-messages .msg.assistant {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom-left-radius: 4px;
+            color: #e0e8f0;
+        }
+        .chat-messages .msg .typing {
+            display: inline-block;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 0.8rem 1rem 1rem;
+            gap: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #f0f4ff;
+            font-size: 0.95rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .chat-input-area input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .chat-input-area input:focus {
+            border-color: #60a5fa;
+        }
+        .chat-input-area .send-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            color: #0a0e1a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 0.9rem;
+        }
+        .chat-input-area .send-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
+        }
+
+        .chat-key-warning {
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255, 200, 100, 0.8);
+            border-top: 1px solid rgba(255, 200, 100, 0.1);
+            background: rgba(255, 200, 100, 0.05);
+        }
+        .chat-key-warning .set-key-btn {
+            color: #60a5fa;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        .chat-key-warning .set-key-btn:hover {
+            color: #93c5fd;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .header { padding: 0.8rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
@@ -504,6 +694,8 @@
             .quick-links { gap: 1.2rem; font-size: 0.8rem; }
             .info-panel { padding: 1.5rem; }
             .info-panel h2 { font-size: 1.5rem; }
+            .chat-panel { width: 90vw; right: 5vw; bottom: 6rem; max-height: 60vh; }
+            .chat-toggle { width: 50px; height: 50px; font-size: 1.4rem; bottom: 4rem; right: 1.5rem; }
         }
 
         @media (max-width: 480px) {
@@ -526,6 +718,8 @@
             #cse-results { padding: 1rem; margin: 0.5rem auto 2rem; }
             .info-panel { padding: 1rem; }
             .info-panel h2 { font-size: 1.2rem; }
+            .chat-panel { width: 95vw; right: 2.5vw; bottom: 5rem; max-height: 55vh; }
+            .chat-toggle { width: 44px; height: 44px; font-size: 1.2rem; bottom: 3.5rem; right: 1rem; }
         }
     </style>
 </head>
@@ -603,14 +797,12 @@
             </div>
         </section>
 
-        <!-- Info Panel (content for quick links) -->
-        <div id="infoPanel" class="info-panel">
-            <!-- dynamically filled -->
-        </div>
+        <!-- Info Panel -->
+        <div id="infoPanel" class="info-panel"></div>
 
-        <!-- Google CSE Results Container -->
+        <!-- Google CSE Results Container with static child div -->
         <div id="cse-results">
-            <!-- Google CSE will render results here -->
+            <div id="gcse-results-div" class="gcse-searchresults-only"></div>
         </div>
 
         <div class="footer-stats">
@@ -622,7 +814,30 @@
         </div>
     </div>
 
-    <!-- ─── Google CSE Script (using your provided ID) ─── -->
+    <!-- ─── DeepSeek Chat Widget ─── -->
+    <button class="chat-toggle" id="chatToggle" aria-label="Open DeepSeek chat">
+        🤖
+        <span class="badge">AI</span>
+    </button>
+
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <h3>🤖 DeepSeek Assistant</h3>
+            <button class="close-btn" id="chatClose">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="msg assistant">👋 Hi! I'm Frigates. Ask me anything about your search or any topic.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type your question…" />
+            <button class="send-btn" id="chatSend">Send</button>
+        </div>
+        <div class="chat-key-warning" id="keyWarning">
+            ⚠️ DeepSeek API key not set. <span class="set-key-btn" id="setKeyBtn">Click here to set it</span>
+        </div>
+    </div>
+
+    <!-- ─── Google CSE Script ─── -->
     <script async src="https://cse.google.com/cse?cx=b21eef7876cd24cb4"></script>
 
     <!-- ─── Main Script ─── -->
@@ -630,7 +845,7 @@
         (function() {
             'use strict';
 
-            // ─── Canvas: Enhanced Naval Battle ───
+            // ─── Canvas: Enhanced Naval Battle (same as before, compact) ───
             const canvas = document.getElementById('battleCanvas');
             const ctx = canvas.getContext('2d');
             let W, H;
@@ -642,7 +857,6 @@
             window.addEventListener('resize', resize);
             resize();
 
-            // ── Ship class with more detail ──
             class Ship {
                 constructor(x, y, scale, speed, color) {
                     this.x = x;
@@ -653,18 +867,12 @@
                     this.waveOffset = Math.random() * Math.PI * 2;
                     this.smokeParticles = [];
                     this.wakeParticles = [];
-                    this.health = 100;
-                    this.alive = true;
                 }
                 update(time) {
-                    // Move
                     this.x += this.speed * 0.5;
                     if (this.x > W + 150) this.x = -150;
-                    // Bob
                     this.waveOffset += 0.02;
                     this.y += Math.sin(this.waveOffset) * 0.08;
-
-                    // Smoke
                     this.smokeParticles.forEach(p => {
                         p.x += p.vx;
                         p.y += p.vy;
@@ -672,8 +880,6 @@
                         p.size += 0.1;
                     });
                     this.smokeParticles = this.smokeParticles.filter(p => p.life > 0);
-
-                    // Wake (trail of white foam)
                     if (Math.random() < 0.3) {
                         this.wakeParticles.push({
                             x: this.x - 70 * this.scale,
@@ -696,21 +902,15 @@
                     const s = this.scale;
                     const hx = this.x;
                     const hy = this.y;
-
-                    // ── Wake ──
                     this.wakeParticles.forEach(p => {
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
                         ctx.fillStyle = `rgba(200, 240, 255, ${p.life * 0.3})`;
                         ctx.fill();
                     });
-
                     ctx.save();
-                    // Hull shadow
                     ctx.shadowColor = 'rgba(0,0,0,0.4)';
                     ctx.shadowBlur = 25;
-
-                    // Main hull
                     ctx.beginPath();
                     ctx.moveTo(hx - 70 * s, hy + 10 * s);
                     ctx.quadraticCurveTo(hx - 85 * s, hy + 4 * s, hx - 75 * s, hy - 2 * s);
@@ -731,41 +931,28 @@
                     ctx.strokeStyle = 'rgba(100,180,255,0.15)';
                     ctx.lineWidth = 1;
                     ctx.stroke();
-
-                    // Waterline
                     ctx.beginPath();
                     ctx.moveTo(hx - 68 * s, hy + 6 * s);
                     ctx.lineTo(hx + 68 * s, hy + 6 * s);
                     ctx.strokeStyle = 'rgba(200,50,50,0.3)';
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
-
                     ctx.shadowBlur = 0;
-
-                    // Deck
                     ctx.fillStyle = 'rgba(40,55,70,0.6)';
                     ctx.fillRect(hx - 55 * s, hy - 10 * s, 95 * s, 4 * s);
-
-                    // Superstructure
                     ctx.fillStyle = 'rgba(50,65,80,0.8)';
                     ctx.fillRect(hx - 20 * s, hy - 22 * s, 40 * s, 12 * s);
                     ctx.fillRect(hx - 10 * s, hy - 30 * s, 20 * s, 8 * s);
-
-                    // Bridge windows
                     ctx.fillStyle = 'rgba(100,200,255,0.25)';
                     for (let i = 0; i < 4; i++) {
                         ctx.fillRect(hx - 14 * s + i * 8 * s, hy - 20 * s, 4 * s, 4 * s);
                     }
-
-                    // Mast & radar
                     ctx.strokeStyle = 'rgba(180,200,220,0.5)';
                     ctx.lineWidth = 1.5;
                     ctx.beginPath();
                     ctx.moveTo(hx + 10 * s, hy - 30 * s);
                     ctx.lineTo(hx + 10 * s, hy - 65 * s);
                     ctx.stroke();
-
-                    // Radar dish
                     ctx.beginPath();
                     ctx.arc(hx + 10 * s, hy - 65 * s, 6 * s, 0, Math.PI * 2);
                     ctx.strokeStyle = 'rgba(100,200,255,0.2)';
@@ -775,8 +962,6 @@
                     ctx.arc(hx + 10 * s, hy - 65 * s, 3 * s, 0, Math.PI * 2);
                     ctx.fillStyle = 'rgba(100,200,255,0.15)';
                     ctx.fill();
-
-                    // Radar arm (rotating)
                     ctx.strokeStyle = 'rgba(200,100,50,0.5)';
                     ctx.lineWidth = 1.5;
                     const angle = Date.now() / 2000;
@@ -784,26 +969,19 @@
                     ctx.moveTo(hx + 10 * s, hy - 65 * s);
                     ctx.lineTo(hx + 10 * s + 8 * s * Math.cos(angle), hy - 65 * s + 8 * s * Math.sin(angle));
                     ctx.stroke();
-
-                    // Gun turrets
                     ctx.fillStyle = 'rgba(60,75,90,0.8)';
                     ctx.shadowBlur = 8;
                     ctx.shadowColor = 'rgba(0,0,0,0.4)';
-                    // Forward
                     ctx.beginPath();
                     ctx.arc(hx - 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
                     ctx.fill();
-                    // Aft
                     ctx.beginPath();
                     ctx.arc(hx + 35 * s, hy - 6 * s, 6 * s, 0, Math.PI * 2);
                     ctx.fill();
-                    // Mid
                     ctx.beginPath();
                     ctx.arc(hx - 5 * s, hy - 6 * s, 5 * s, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
-
-                    // Gun barrels
                     ctx.strokeStyle = 'rgba(80,100,120,0.6)';
                     ctx.lineWidth = 2;
                     for (let gx of [-35 * s, 35 * s, -5 * s]) {
@@ -812,15 +990,12 @@
                         ctx.lineTo(hx + gx + 10 * s * (gx > 0 ? 1 : -1), hy - 10 * s);
                         ctx.stroke();
                     }
-
-                    // Stack smoke
                     const stackX = hx + 5 * s;
                     const stackY = hy - 28 * s;
                     ctx.fillStyle = 'rgba(100,120,140,0.15)';
                     ctx.beginPath();
                     ctx.arc(stackX, stackY, 4 * s, 0, Math.PI * 2);
                     ctx.fill();
-
                     if (Math.random() < 0.4) {
                         this.smokeParticles.push({
                             x: stackX + (Math.random() - 0.5) * 4 * s,
@@ -837,8 +1012,6 @@
                         ctx.fillStyle = `rgba(180,200,220,${p.life * 0.15})`;
                         ctx.fill();
                     });
-
-                    // Running lights
                     const blink = Math.sin(Date.now() / 800) > 0.5;
                     if (blink) {
                         ctx.fillStyle = 'rgba(255,50,50,0.6)';
@@ -858,7 +1031,6 @@
                 }
             }
 
-            // ── Enhanced Missile with exhaust particles ──
             class Missile {
                 constructor(x, y, targetX, targetY) {
                     this.x = x;
@@ -880,21 +1052,17 @@
                     if (dist < 20) {
                         this.alive = false;
                         this.exploded = true;
-                        this.explosionTimer = 60; // frames of explosion
+                        this.explosionTimer = 60;
                         return;
                     }
                     const angle = Math.atan2(dy, dx);
                     this.x += Math.cos(angle) * this.speed;
                     this.y += Math.sin(angle) * this.speed;
                     this.angle = angle;
-
-                    // Trail
                     this.trail.push({ x: this.x, y: this.y, life: 1 });
                     if (this.trail.length > 40) this.trail.shift();
                     this.trail.forEach(p => p.life -= 0.02);
                     this.trail = this.trail.filter(p => p.life > 0);
-
-                    // Exhaust particles
                     for (let i = 0; i < 2; i++) {
                         this.exhaust.push({
                             x: this.x - 6 * Math.cos(angle),
@@ -912,34 +1080,25 @@
                         p.size *= 0.98;
                     });
                     this.exhaust = this.exhaust.filter(p => p.life > 0);
-
-                    // Wobble
                     this.x += (Math.random() - 0.5) * 0.3;
                     this.y += (Math.random() - 0.5) * 0.3;
                 }
                 draw(ctx) {
-                    // Exhaust glow
                     this.exhaust.forEach(p => {
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
                         ctx.fillStyle = `rgba(255, 180, 50, ${p.life * 0.4})`;
                         ctx.fill();
                     });
-
-                    // Trail
                     this.trail.forEach(p => {
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, 2 * (p.life * 0.8 + 0.2), 0, Math.PI * 2);
                         ctx.fillStyle = `rgba(255,150,50,${p.life * 0.5})`;
                         ctx.fill();
                     });
-
-                    // Missile body
                     ctx.save();
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.angle);
-
-                    // Glow
                     const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 20);
                     grad.addColorStop(0, 'rgba(255,200,100,0.15)');
                     grad.addColorStop(1, 'rgba(255,200,100,0)');
@@ -947,41 +1106,31 @@
                     ctx.beginPath();
                     ctx.arc(0, 0, 20, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Body
                     ctx.shadowBlur = 20;
                     ctx.shadowColor = 'rgba(255,150,50,0.4)';
                     ctx.fillStyle = '#ff8833';
                     ctx.beginPath();
                     ctx.ellipse(0, 0, 6, 2, 0, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Nose
                     ctx.fillStyle = '#ffcc66';
                     ctx.beginPath();
                     ctx.ellipse(6, 0, 3, 1.5, 0, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Fins
                     ctx.fillStyle = 'rgba(200,150,100,0.6)';
                     ctx.fillRect(-4, -3, 2, 1);
                     ctx.fillRect(-4, 2, 2, 1);
-
-                    // Engine glow
                     ctx.shadowBlur = 30;
                     ctx.shadowColor = 'rgba(255,100,50,0.6)';
                     ctx.fillStyle = 'rgba(255,200,100,0.8)';
                     ctx.beginPath();
                     ctx.arc(-6, 0, 3, 0, Math.PI * 2);
                     ctx.fill();
-
                     ctx.shadowBlur = 0;
                     ctx.restore();
                 }
                 isAlive() { return this.alive || this.exploded; }
             }
 
-            // ── Explosion effect (particle system) ──
             let explosions = [];
 
             function createExplosion(x, y) {
@@ -1002,7 +1151,6 @@
                 }
             }
 
-            // ── Scene state ──
             let ships = [];
             let missiles = [];
             let stars = [];
@@ -1036,7 +1184,6 @@
                         opacity: 0.05 + Math.random() * 0.1
                     });
                 }
-                // Initial missiles
                 launchMissile(ships[0], ships[1]);
                 setTimeout(() => launchMissile(ships[2], ships[0]), 2000);
                 setTimeout(() => launchMissile(ships[1], ships[3]), 4000);
@@ -1062,7 +1209,6 @@
                 }
             }, 3500);
 
-            // ── Draw sea ──
             function drawSea() {
                 const grad = ctx.createLinearGradient(0, H * 0.6, 0, H);
                 grad.addColorStop(0, 'rgba(10,20,45,0.9)');
@@ -1071,8 +1217,6 @@
                 grad.addColorStop(1, 'rgba(0,3,15,1)');
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, H * 0.6, W, H * 0.4);
-
-                // Waves
                 ctx.beginPath();
                 const waveY = H * 0.6;
                 for (let x = 0; x <= W; x += 2) {
@@ -1086,8 +1230,6 @@
                 ctx.strokeStyle = 'rgba(60,120,200,0.12)';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-
-                // Second wave
                 ctx.beginPath();
                 for (let x = 0; x <= W; x += 2) {
                     const wave1 = Math.sin(x * 0.02 + time * 0.001 + 0.8) * 6;
@@ -1099,8 +1241,6 @@
                 ctx.strokeStyle = 'rgba(80,160,255,0.06)';
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
-
-                // Foam
                 for (let i = 0; i < 15; i++) {
                     const fx = (Math.sin(i * 1.7 + time * 0.0005) * 0.5 + 0.5) * W;
                     const fy = waveY + 8 + Math.sin(i * 2.3 + time * 0.001) * 8;
@@ -1109,8 +1249,6 @@
                     ctx.fillStyle = `rgba(150,220,255,${0.04 + Math.sin(time * 0.001 + i) * 0.02 + 0.02})`;
                     ctx.fill();
                 }
-
-                // Horizon glow
                 const glow = ctx.createRadialGradient(W / 2, H * 0.58, 0, W / 2, H * 0.58, 200);
                 glow.addColorStop(0, 'rgba(255,200,150,0.06)');
                 glow.addColorStop(0.5, 'rgba(255,150,100,0.03)');
@@ -1119,7 +1257,6 @@
                 ctx.fillRect(0, H * 0.4, W, H * 0.3);
             }
 
-            // ── Draw sky ──
             function drawSky() {
                 const grad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
                 grad.addColorStop(0, '#050810');
@@ -1150,7 +1287,6 @@
                     ctx.ellipse(c.x + c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.3, 0, 0, Math.PI * 2);
                     ctx.fill();
                 });
-                // Distant flashes
                 if (Math.random() < 0.003) {
                     const fx = Math.random() * W;
                     const fy = H * 0.2 + Math.random() * H * 0.2;
@@ -1165,23 +1301,17 @@
                 }
             }
 
-            // ── Animation loop ──
             function animate() {
                 time++;
                 ctx.clearRect(0, 0, W, H);
                 drawSky();
                 drawSea();
-
-                // Update & draw ships
                 ships.forEach(ship => { ship.update(time);
                     ship.draw(ctx); });
-
-                // Update missiles & handle explosions
                 const newMissiles = [];
                 missiles.forEach(m => {
                     m.update();
                     if (m.exploded && m.explosionTimer > 0) {
-                        // Create explosion particles
                         if (m.explosionTimer === 60) {
                             createExplosion(m.x, m.y);
                         }
@@ -1195,12 +1325,10 @@
                     }
                 });
                 missiles = newMissiles;
-
-                // Update explosions
                 explosions.forEach(p => {
                     p.x += p.vx;
                     p.y += p.vy;
-                    p.vy += 0.05; // gravity
+                    p.vy += 0.05;
                     p.life -= 0.01;
                     p.size *= 0.99;
                 });
@@ -1211,8 +1339,6 @@
                     ctx.fillStyle = p.color.replace(')', `, ${p.life})`).replace('hsl', 'hsla');
                     ctx.fill();
                 });
-
-                // Random launch flash
                 if (Math.random() < 0.002) {
                     const ship = ships[Math.floor(Math.random() * ships.length)];
                     if (ship) {
@@ -1228,7 +1354,6 @@
                         ctx.fill();
                     }
                 }
-
                 requestAnimationFrame(animate);
             }
 
@@ -1236,7 +1361,6 @@
             const infoPanel = document.getElementById('infoPanel');
             const quickLinks = document.querySelectorAll('.quick-links a');
 
-            // Data for each panel
             const panelData = {
                 oceans: {
                     title: '🌊 Oceans',
@@ -1299,82 +1423,110 @@
                     e.preventDefault();
                     const panel = this.dataset.panel;
                     if (panel && panelData[panel]) {
-                        // Close any open info panels (just one)
                         infoPanel.classList.remove('visible');
-                        // Populate and show
                         infoPanel.innerHTML = `
                                 <h2>${panelData[panel].title}</h2>
                                 ${panelData[panel].content}
                             `;
                         infoPanel.classList.add('visible');
-                        // Scroll to it
                         infoPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        // If results are visible, hide them? Optional
-                        // We'll keep both.
                     }
                 });
             });
 
-            // ─── Search (Google CSE) with no redirects ───
+            // ─── Google CSE Integration (Fixed) ───
             const input = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
             const luckyBtn = document.getElementById('luckyBtn');
             const resultsContainer = document.getElementById('cse-results');
+            const resultsDivId = 'gcse-results-div';
 
-            // Wait for CSE to load
             let cseReady = false;
             let cseElement = null;
+            let pendingQuery = null;
+            let cseInitAttempts = 0;
 
             function initCSE() {
+                // Check if Google CSE API is available
                 if (window.google && google.search && google.search.cse && google.search.cse.element) {
                     cseReady = true;
-                    const resultsDiv = document.createElement('div');
-                    resultsDiv.id = 'gcse-results-div';
-                    resultsContainer.appendChild(resultsDiv);
-
+                    // Render the search results element
                     google.search.cse.element.render({
-                        div: 'gcse-results-div',
+                        div: resultsDivId,
                         tag: 'searchresults-only',
                         attributes: {
                             linkTarget: '_blank'
                         }
                     });
-                    cseElement = google.search.cse.element.getElement('gcse-results-div');
+                    // Get the element instance
+                    cseElement = google.search.cse.element.getElement(resultsDivId);
                     console.log('[Frigates] Google CSE ready');
+
+                    // If there's a pending query, execute it
+                    if (pendingQuery) {
+                        executeSearch(pendingQuery);
+                        pendingQuery = null;
+                    }
+                    return true;
                 } else {
-                    setTimeout(initCSE, 500);
+                    cseInitAttempts++;
+                    if (cseInitAttempts < 30) { // try for up to 15 seconds
+                        setTimeout(initCSE, 500);
+                    } else {
+                        // Show fallback message
+                        resultsContainer.innerHTML = `
+                                <p style="color: rgba(255,255,255,0.7); text-align: center;">
+                                    ⚠️ Search engine failed to load. Please check your internet connection or try a different browser.
+                                </p>
+                            `;
+                        resultsContainer.style.display = 'block';
+                        resultsContainer.classList.add('gcse-results-visible');
+                    }
+                    return false;
                 }
             }
 
-            window.addEventListener('load', initCSE);
+            function executeSearch(query) {
+                if (cseReady && cseElement) {
+                    cseElement.execute(query);
+                    // Ensure results container is visible
+                    resultsContainer.style.display = 'block';
+                    resultsContainer.classList.add('gcse-results-visible');
+                    document.body.classList.add('show-results');
+                } else {
+                    // Store query for later
+                    pendingQuery = query;
+                    // Show loading message
+                    resultsContainer.innerHTML = `
+                            <p style="color: rgba(255,255,255,0.7); text-align: center;">
+                                ⏳ Loading search engine... Please wait.
+                            </p>
+                        `;
+                    resultsContainer.style.display = 'block';
+                    resultsContainer.classList.add('gcse-results-visible');
+                    document.body.classList.add('show-results');
+                    // Attempt to init CSE if not already
+                    if (!cseReady) {
+                        initCSE();
+                    }
+                }
+            }
 
             function performSearch(query) {
                 if (!query.trim()) {
                     input.focus();
                     return;
                 }
-                // Show results container
-                resultsContainer.style.display = 'block';
-                resultsContainer.classList.add('gcse-results-visible');
-                document.body.classList.add('show-results');
-
-                if (cseReady && cseElement) {
-                    cseElement.execute(query);
-                } else {
-                    // If CSE not ready, show a message and try again
-                    resultsContainer.innerHTML =
-                        '<p style="color: rgba(255,255,255,0.7); text-align: center;">⏳ Loading search engine... Please try again in a moment.</p>';
-                    initCSE();
-                    setTimeout(() => {
-                        if (cseReady && cseElement) {
-                            cseElement.execute(query);
-                            resultsContainer.innerHTML = '';
-                        }
-                    }, 1500);
+                // Clear any previous results messages but keep the div
+                const resultsDiv = document.getElementById(resultsDivId);
+                if (resultsDiv) {
+                    resultsDiv.innerHTML = ''; // clear previous results
                 }
+                executeSearch(query);
             }
 
-            // Event listeners (no redirects)
+            // ── Event listeners ──
+
             searchBtn.addEventListener('click', function() {
                 performSearch(input.value);
             });
@@ -1398,7 +1550,6 @@
                 performSearch(randomQuery);
             });
 
-            // Keyboard shortcut '/'
             document.addEventListener('keydown', function(e) {
                 if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
                     const tag = document.activeElement ? document.activeElement.tagName : '';
@@ -1410,25 +1561,21 @@
                 }
             });
 
-            // Nav links (prevent default)
             document.querySelectorAll('.nav-links a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.dataset.section;
                     if (section) {
-                        // Optionally perform a search for that section
                         input.value = section;
                         performSearch(section);
                     }
                 });
             });
 
-            // Avatar click
             document.querySelector('.avatar')?.addEventListener('click', () => {
                 alert('⚓ Your naval command center — coming soon!');
             });
 
-            // Voice button
             document.getElementById('voiceBtn')?.addEventListener('click', () => {
                 if ('webkitSpeechRecognition' in window) {
                     alert('🎤 Voice command ready! (demo)');
@@ -1437,7 +1584,136 @@
                 }
             });
 
-            // ── Start the battle scene ──
+            // ─── DeepSeek Chat Integration ───
+            const chatToggle = document.getElementById('chatToggle');
+            const chatPanel = document.getElementById('chatPanel');
+            const chatClose = document.getElementById('chatClose');
+            const chatInput = document.getElementById('chatInput');
+            const chatSend = document.getElementById('chatSend');
+            const chatMessages = document.getElementById('chatMessages');
+            const keyWarning = document.getElementById('keyWarning');
+            const setKeyBtn = document.getElementById('setKeyBtn');
+
+            let apiKey = localStorage.getItem('deepseek_api_key') || '';
+
+            chatToggle.addEventListener('click', function() {
+                chatPanel.classList.toggle('open');
+                if (chatPanel.classList.contains('open')) {
+                    chatInput.focus();
+                }
+            });
+
+            chatClose.addEventListener('click', function() {
+                chatPanel.classList.remove('open');
+            });
+
+            function updateKeyWarning() {
+                if (apiKey) {
+                    keyWarning.style.display = 'none';
+                } else {
+                    keyWarning.style.display = 'block';
+                }
+            }
+            updateKeyWarning();
+
+            setKeyBtn.addEventListener('click', function() {
+                const newKey = prompt('Enter your DeepSeek API key:', '');
+                if (newKey !== null && newKey.trim() !== '') {
+                    apiKey = newKey.trim();
+                    localStorage.setItem('deepseek_api_key', apiKey);
+                    updateKeyWarning();
+                    chatMessages.innerHTML +=
+                        `<div class="msg assistant">✅ API key set successfully! You can now ask questions.</div>`;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+
+            async function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                chatMessages.innerHTML += `<div class="msg user">${escapeHtml(message)}</div>`;
+                chatInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                if (!apiKey) {
+                    chatMessages.innerHTML +=
+                        `<div class="msg assistant">⚠️ Please set your DeepSeek API key first by clicking "Click here to set it" at the bottom.</div>`;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    return;
+                }
+
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'msg assistant';
+                typingDiv.innerHTML = '<span class="typing">● ● ●</span>';
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                try {
+                    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'deepseek-chat',
+                            messages: [
+                                { role: 'system', content: 'You are a helpful assistant. Provide clear, concise, and accurate answers.' },
+                                { role: 'user', content: message }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 500
+                        })
+                    });
+
+                    chatMessages.removeChild(typingDiv);
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        let errorMsg = `❌ API error (${response.status})`;
+                        if (errorData.error && errorData.error.message) {
+                            errorMsg += `: ${errorData.error.message}`;
+                        }
+                        chatMessages.innerHTML += `<div class="msg assistant">${errorMsg}</div>`;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        return;
+                    }
+
+                    const data = await response.json();
+                    const reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content ?
+                        data.choices[0].message.content :
+                        '⚠️ No response received.';
+                    chatMessages.innerHTML += `<div class="msg assistant">${escapeHtml(reply)}</div>`;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                } catch (error) {
+                    chatMessages.removeChild(typingDiv);
+                    chatMessages.innerHTML +=
+                        `<div class="msg assistant">❌ Network error: ${escapeHtml(error.message)}</div>`;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            chatSend.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault();
+                    sendMessage(); }
+            });
+
+            // ── Start CSE initialisation and battle scene ──
+            // Wait for the page to fully load before initialising CSE
+            window.addEventListener('load', function() {
+                // Give Google script a moment to load
+                setTimeout(initCSE, 1000);
+            });
+
             initScene();
             animate();
 
@@ -1449,7 +1725,7 @@
                 });
             });
 
-            console.log('⚓ Frigates ready — zero redirects, enhanced combat, and interactive info!');
+            console.log('⚓ Frigates ready with fixed Google CSE and DeepSeek AI!');
         })();
     </script>
 </body>
